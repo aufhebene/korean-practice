@@ -1,12 +1,19 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, type Transition } from "framer-motion";
 
 interface MascotProps {
   mood?: "happy" | "excited" | "thinking" | "sad" | "neutral";
   size?: "sm" | "md" | "lg";
   message?: string;
 }
+
+type MoodAnimation = {
+  y?: number[];
+  rotate?: number[];
+  scale?: number[];
+  transition: Transition;
+};
 
 export default function Mascot({
   mood = "neutral",
@@ -19,7 +26,6 @@ export default function Mascot({
     lg: "w-32 h-32 text-7xl",
   };
 
-  // 호랑이 이모지를 마스코트로 사용 (추후 커스텀 일러스트로 교체 가능)
   const expressions = {
     happy: "😊",
     excited: "🎉",
@@ -28,27 +34,27 @@ export default function Mascot({
     neutral: "🐯",
   };
 
-  const animations = {
+  const animations: Record<string, MoodAnimation> = {
     happy: {
       y: [0, -5, 0],
-      transition: { repeat: Infinity, duration: 2, ease: "easeInOut" },
+      transition: { repeat: Infinity, duration: 2, ease: "easeInOut" as const },
     },
     excited: {
       rotate: [-5, 5, -5],
       scale: [1, 1.1, 1],
-      transition: { repeat: Infinity, duration: 0.5, ease: "easeInOut" },
+      transition: { repeat: Infinity, duration: 0.5, ease: "easeInOut" as const },
     },
     thinking: {
       rotate: [0, 5, 0],
-      transition: { repeat: Infinity, duration: 3, ease: "easeInOut" },
+      transition: { repeat: Infinity, duration: 3, ease: "easeInOut" as const },
     },
     sad: {
       y: [0, 2, 0],
-      transition: { repeat: Infinity, duration: 2, ease: "easeInOut" },
+      transition: { repeat: Infinity, duration: 2, ease: "easeInOut" as const },
     },
     neutral: {
       y: [0, -3, 0],
-      transition: { repeat: Infinity, duration: 3, ease: "easeInOut" },
+      transition: { repeat: Infinity, duration: 3, ease: "easeInOut" as const },
     },
   };
 
