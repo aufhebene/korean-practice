@@ -1,81 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, X, CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
 import Mascot from "@/components/ui/Mascot";
 import Button from "@/components/ui/Button";
+import { vocabularyData, generateQuizOptions, getRandomVocabulary } from "@/data/vocabulary";
+import type { Vocabulary } from "@/types";
 
-// 어휘 퀴즈 데이터
-const vocabularyQuizzes = [
-  {
-    id: 1,
-    korean: "사랑",
-    pronunciation: "sarang",
-    correctAnswer: "Love",
-    options: ["Love", "Hate", "Friend", "Family"],
-    example: "나는 너를 사랑해요.",
-  },
-  {
-    id: 2,
-    korean: "행복",
-    pronunciation: "haengbok",
-    correctAnswer: "Happiness",
-    options: ["Sadness", "Happiness", "Anger", "Fear"],
-    example: "행복한 하루 보내세요.",
-  },
-  {
-    id: 3,
-    korean: "친구",
-    pronunciation: "chingu",
-    correctAnswer: "Friend",
-    options: ["Enemy", "Teacher", "Friend", "Parent"],
-    example: "그는 내 친구예요.",
-  },
-  {
-    id: 4,
-    korean: "음식",
-    pronunciation: "eumsik",
-    correctAnswer: "Food",
-    options: ["Water", "Food", "Drink", "Fruit"],
-    example: "한국 음식이 맛있어요.",
-  },
-  {
-    id: 5,
-    korean: "학교",
-    pronunciation: "hakgyo",
-    correctAnswer: "School",
-    options: ["Home", "Office", "School", "Hospital"],
-    example: "학교에 가요.",
-  },
-];
+const QUIZ_COUNT = 10; // 한 세션당 10문제
 
 export default function VocabularyStudyPage() {
+  const [quizWords, setQuizWords] = useState<Vocabulary[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
+  const [options, setOptions] = useState<string[]>([]);
 
-  const currentQuiz = vocabularyQuizzes[currentIndex];
-  const progress = ((currentIndex + 1) / vocabularyQuizzes.length) * 100;
-  const isCorrect = selectedAnswer === currentQuiz?.correctAnswer;
+  // 퀴즈 초기화
+  useEffect(() => {
+    const words = getRandomVocabulary(QUIZ_COUNT);
+    setQuizWords(words);
+    if (words.length > 0) {
+      setOptions(generateQuizOptions(words[0]));
+    }
+  }, []);
+
+  const currentQuiz = quizWords[currentIndex];
+  const progress = quizWords.length > 0 ? ((currentIndex + 1) / quizWords.length) * 100 : 0;
+  const isCorrect = selectedAnswer === currentQuiz?.meanings.en;
 
   const handleSelect = (answer: string) => {
-    if (showResult) return;
+    if (showResult || !currentQuiz) return;
     setSelectedAnswer(answer);
     setShowResult(true);
-    if (answer === currentQuiz.correctAnswer) {
+    if (answer === currentQuiz.meanings.en) {
       setCorrectCount((prev) => prev + 1);
     }
   };
 
   const handleNext = () => {
-    if (currentIndex < vocabularyQuizzes.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
+    if (currentIndex < quizWords.length - 1) {
+      const nextIndex = currentIndex + 1;
+      setCurrentIndex(nextIndex);
       setSelectedAnswer(null);
       setShowResult(false);
+      setOptions(generateQuizOptions(quizWords[nextIndex]));
     } else {
       setIsComplete(true);
     }
@@ -85,14 +58,22 @@ export default function VocabularyStudyPage() {
     if (!showResult) {
       return "bg-white border-gray-200 hover:border-primary hover:bg-primary/5";
     }
-    if (option === currentQuiz.correctAnswer) {
+    if (option === currentQuiz?.meanings.en) {
       return "bg-success text-white border-success";
     }
-    if (option === selectedAnswer && option !== currentQuiz.correctAnswer) {
+    if (option === selectedAnswer && option !== currentQuiz?.meanings.en) {
       return "bg-error text-white border-error";
     }
     return "bg-gray-100 border-gray-200 opacity-50";
   };
+
+  if (quizWords.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted">로딩 중...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -119,7 +100,7 @@ export default function VocabularyStudyPage() {
             />
           </div>
           <p className="text-xs text-muted text-center mt-2">
-            {currentIndex + 1} / {vocabularyQuizzes.length}
+            {currentIndex + 1} / {quizWords.length}
           </p>
         </div>
       </header>
@@ -151,7 +132,7 @@ export default function VocabularyStudyPage() {
                 </p>
                 <p className="text-muted text-sm">{currentQuiz.pronunciation}</p>
                 <p className="text-muted text-xs mt-4 bg-gray-50 px-3 py-2 rounded-lg inline-block">
-                  예: {currentQuiz.example}
+                  예: {currentQuiz.examples[0]}
                 </p>
               </div>
 
@@ -177,7 +158,7 @@ export default function VocabularyStudyPage() {
                       </p>
                       {!isCorrect && (
                         <p className="text-sm text-muted">
-                          정답: <span className="font-bold">{currentQuiz.correctAnswer}</span>
+                          정답: <span className="font-bold">{currentQuiz.meanings.en}</span>
                         </p>
                       )}
                     </div>
@@ -187,7 +168,7 @@ export default function VocabularyStudyPage() {
 
               {/* Options */}
               <div className="grid grid-cols-2 gap-3">
-                {currentQuiz.options.map((option) => (
+                {options.map((option) => (
                   <motion.button
                     key={option}
                     whileHover={!showResult ? { scale: 1.02 } : {}}
@@ -204,7 +185,7 @@ export default function VocabularyStudyPage() {
               {/* Next Button */}
               {showResult && (
                 <Button onClick={handleNext} size="lg" className="w-full">
-                  {currentIndex < vocabularyQuizzes.length - 1 ? "다음 문제" : "결과 보기"}
+                  {currentIndex < quizWords.length - 1 ? "다음 문제" : "결과 보기"}
                 </Button>
               )}
             </motion.div>
@@ -220,23 +201,32 @@ export default function VocabularyStudyPage() {
                 어휘 학습 완료!
               </h2>
               <p className="text-muted mb-8">
-                {vocabularyQuizzes.length}문제 중 {correctCount}문제를 맞혔어요
+                {quizWords.length}문제 중 {correctCount}문제를 맞혔어요
               </p>
 
               <div className="w-full max-w-xs space-y-4">
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                   <div className="text-4xl font-bold text-emerald-500 mb-1">
-                    {Math.round((correctCount / vocabularyQuizzes.length) * 100)}%
+                    {Math.round((correctCount / quizWords.length) * 100)}%
                   </div>
                   <p className="text-sm text-muted">정답률</p>
                 </div>
 
-                <Link
-                  href="/"
-                  className="block w-full bg-primary text-white py-3 px-6 rounded-xl font-medium text-center hover:bg-primary/90 transition-colors"
-                >
-                  홈으로 돌아가기
-                </Link>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => window.location.reload()}
+                    className="flex-1"
+                  >
+                    다시 학습
+                  </Button>
+                  <Link
+                    href="/"
+                    className="flex-1 bg-primary text-white py-3 px-6 rounded-xl font-medium text-center hover:bg-primary/90 transition-colors"
+                  >
+                    홈으로
+                  </Link>
+                </div>
               </div>
             </motion.div>
           )}
