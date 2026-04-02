@@ -1,69 +1,83 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, BookOpen, MessageCircle, Headphones, PenTool } from "lucide-react";
+import { BookOpen, MessageCircle, Headphones, PenTool, ChevronRight, Sparkles, RotateCcw, Zap } from "lucide-react";
 import Link from "next/link";
-import Button from "@/components/ui/Button";
 import Mascot from "@/components/ui/Mascot";
 import StreakBadge from "@/components/ui/StreakBadge";
-import StudySummaryModal from "@/components/ui/StudySummaryModal";
 import Card from "@/components/ui/Card";
-import type { DailyStudySummary } from "@/types";
+import { LucideIcon } from "lucide-react";
 
-// 샘플 데이터
-const mockSummary: DailyStudySummary = {
-  newWords: 8,
-  reviewWords: 15,
-  retryWords: 4,
-  estimatedMinutes: 10,
-};
+type QuizStats = { new: number; review: number; retry: number };
+type ConversationStats = { scenarios: number };
 
-const features = [
+interface StudyModule {
+  id: string;
+  icon: LucideIcon;
+  label: string;
+  description: string;
+  href: string;
+  color: string;
+  gradient: string;
+  stats: QuizStats | ConversationStats;
+}
+
+// 타입 가드
+function isQuizStats(stats: QuizStats | ConversationStats): stats is QuizStats {
+  return "new" in stats;
+}
+
+// 모듈별 샘플 데이터
+const modules: StudyModule[] = [
   {
+    id: "vocabulary",
     icon: BookOpen,
-    label: "어휘",
-    description: "단어 학습",
-    href: "/vocabulary",
+    label: "어휘 학습",
+    description: "단어 암기 및 의미 학습",
+    href: "/study/vocabulary",
     color: "bg-emerald-500",
+    gradient: "from-emerald-500 to-teal-500",
+    stats: { new: 8, review: 15, retry: 4 },
   },
   {
-    icon: MessageCircle,
-    label: "회화",
-    description: "상황별 대화",
-    href: "/conversation",
-    color: "bg-blue-500",
-  },
-  {
+    id: "grammar",
     icon: PenTool,
-    label: "문법",
-    description: "문법 연습",
-    href: "/grammar",
+    label: "문법 학습",
+    description: "문법 패턴 및 조사 학습",
+    href: "/study/grammar",
     color: "bg-purple-500",
+    gradient: "from-purple-500 to-indigo-500",
+    stats: { new: 3, review: 7, retry: 2 },
   },
   {
+    id: "conversation",
+    icon: MessageCircle,
+    label: "회화 학습",
+    description: "상황별 대화 표현 학습",
+    href: "/study/conversation",
+    color: "bg-blue-500",
+    gradient: "from-blue-500 to-cyan-500",
+    stats: { scenarios: 12 },
+  },
+  {
+    id: "listening",
     icon: Headphones,
-    label: "듣기",
-    description: "리스닝 연습",
-    href: "/listening",
+    label: "듣기 학습",
+    description: "발음 및 청취 학습",
+    href: "/study/listening",
     color: "bg-amber-500",
+    gradient: "from-amber-500 to-orange-500",
+    stats: { new: 5, review: 10, retry: 3 },
   },
 ];
 
 export default function HomePage() {
-  const [showModal, setShowModal] = useState(false);
-  const streak = 12; // 임시 데이터
-
-  const handleStartStudy = () => {
-    setShowModal(false);
-    // TODO: 학습 페이지로 이동
-    window.location.href = "/study";
-  };
+  const streak = 12;
 
   return (
-    <main className="min-h-screen pb-24">
+    <main className="min-h-screen pb-8">
       {/* Header */}
-      <header className="bg-gradient-to-br from-primary to-primary-light p-6 pb-12 rounded-b-3xl">
+      <header className="bg-gradient-to-br from-primary to-primary-light p-6 pb-16 rounded-b-3xl">
         <div className="max-w-lg mx-auto">
           <div className="flex justify-between items-start">
             <div>
@@ -76,63 +90,83 @@ export default function HomePage() {
       </header>
 
       {/* Main Content */}
-      <div className="max-w-lg mx-auto px-4 -mt-6 space-y-6">
+      <div className="max-w-lg mx-auto px-4 -mt-10 space-y-6">
         {/* Mascot Card */}
         <Card className="p-6 text-center">
-          <Mascot mood="happy" size="lg" message="오늘도 열심히 해봐요!" />
-
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mt-6"
-          >
-            <Button
-              size="lg"
-              onClick={() => setShowModal(true)}
-              className="w-full max-w-xs"
-            >
-              오늘의 학습 시작하기
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-          </motion.div>
+          <Mascot mood="happy" size="md" message="무엇을 공부할까요?" />
         </Card>
 
-        {/* Quick Actions */}
-        <section>
-          <h2 className="text-lg font-bold text-foreground mb-4">학습 메뉴</h2>
-          <div className="grid grid-cols-2 gap-3">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <motion.div
-                  key={feature.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index }}
-                >
-                  <Link href={feature.href}>
-                    <Card hover className="p-4 flex items-center gap-3">
+        {/* Module Cards */}
+        <section className="space-y-3">
+          {modules.map((module, index) => {
+            const Icon = module.icon;
+            const hasQuizStats = "new" in module.stats;
+
+            return (
+              <motion.div
+                key={module.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 * index }}
+              >
+                <Link href={module.href}>
+                  <Card hover className="p-4">
+                    <div className="flex items-center gap-4">
+                      {/* Icon */}
                       <div
-                        className={`w-12 h-12 ${feature.color} rounded-xl flex items-center justify-center`}
+                        className={`w-14 h-14 bg-gradient-to-br ${module.gradient} rounded-2xl flex items-center justify-center shadow-lg`}
                       >
-                        <Icon className="w-6 h-6 text-white" />
+                        <Icon className="w-7 h-7 text-white" />
                       </div>
-                      <div>
-                        <p className="font-bold text-foreground">{feature.label}</p>
-                        <p className="text-sm text-muted">{feature.description}</p>
+
+                      {/* Content */}
+                      <div className="flex-1">
+                        <h3 className="font-bold text-foreground text-lg">
+                          {module.label}
+                        </h3>
+                        <p className="text-sm text-muted">{module.description}</p>
+
+                        {/* Stats */}
+                        {isQuizStats(module.stats) ? (
+                          <div className="flex gap-3 mt-2">
+                            <span className="inline-flex items-center gap-1 text-xs text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                              <Sparkles className="w-3 h-3" />
+                              새 {module.stats.new}개
+                            </span>
+                            <span className="inline-flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                              <RotateCcw className="w-3 h-3" />
+                              복습 {module.stats.review}개
+                            </span>
+                            {module.stats.retry > 0 && (
+                              <span className="inline-flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                                <Zap className="w-3 h-3" />
+                                재도전 {module.stats.retry}개
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="flex gap-3 mt-2">
+                            <span className="inline-flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                              <MessageCircle className="w-3 h-3" />
+                              {module.stats.scenarios}개 시나리오
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    </Card>
-                  </Link>
-                </motion.div>
-              );
-            })}
-          </div>
+
+                      {/* Arrow */}
+                      <ChevronRight className="w-5 h-5 text-muted" />
+                    </div>
+                  </Card>
+                </Link>
+              </motion.div>
+            );
+          })}
         </section>
 
         {/* Progress Summary */}
         <section>
-          <h2 className="text-lg font-bold text-foreground mb-4">학습 현황</h2>
+          <h2 className="text-lg font-bold text-foreground mb-4">전체 학습 현황</h2>
           <Card className="p-5">
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
@@ -151,14 +185,6 @@ export default function HomePage() {
           </Card>
         </section>
       </div>
-
-      {/* Study Summary Modal */}
-      <StudySummaryModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onStart={handleStartStudy}
-        summary={mockSummary}
-      />
     </main>
   );
 }
