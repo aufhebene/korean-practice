@@ -6,6 +6,7 @@ import Link from "next/link";
 import Mascot from "@/components/ui/Mascot";
 import StreakBadge from "@/components/ui/StreakBadge";
 import Card from "@/components/ui/Card";
+import UserButton from "@/components/ui/UserButton";
 import { LucideIcon } from "lucide-react";
 
 type QuizStats = { new: number; review: number; retry: number };
@@ -84,7 +85,10 @@ export default function HomePage() {
               <h1 className="text-white text-2xl font-bold">Korean Practice</h1>
               <p className="text-white/80 text-sm mt-1">오늘도 한국어 공부 파이팅!</p>
             </div>
-            <StreakBadge streak={streak} />
+            <div className="flex items-center gap-3">
+              <StreakBadge streak={streak} />
+              <UserButton />
+            </div>
           </div>
         </div>
       </header>
