@@ -1,146 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, X, CheckCircle, XCircle, RotateCcw } from "lucide-react";
+import { ArrowLeft, X, CheckCircle, XCircle, RotateCcw, BookOpen } from "lucide-react";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
-
-// 시나리오별 회화 데이터
-const scenarioData: Record<string, {
-  title: string;
-  sentences: {
-    english: string;
-    korean: string;
-    words: string[];
-  }[];
-}> = {
-  cafe: {
-    title: "카페에서 주문하기",
-    sentences: [
-      {
-        english: "I'd like an iced Americano, please.",
-        korean: "아이스 아메리카노 주세요",
-        words: ["주세요", "아이스", "아메리카노"],
-      },
-      {
-        english: "For here or to go?",
-        korean: "여기서 드시고 가세요 포장이에요",
-        words: ["여기서", "드시고", "가세요", "포장이에요"],
-      },
-      {
-        english: "For here, please.",
-        korean: "여기서 먹을게요",
-        words: ["먹을게요", "여기서"],
-      },
-      {
-        english: "Can I pay by card?",
-        korean: "카드로 계산할게요",
-        words: ["계산할게요", "카드로"],
-      },
-    ],
-  },
-  shopping: {
-    title: "마트에서 장보기",
-    sentences: [
-      {
-        english: "How much is this?",
-        korean: "이거 얼마예요",
-        words: ["얼마예요", "이거"],
-      },
-      {
-        english: "It's 5,000 won.",
-        korean: "오천 원이에요",
-        words: ["원이에요", "오천"],
-      },
-      {
-        english: "Do you need a bag?",
-        korean: "봉투 필요하세요",
-        words: ["필요하세요", "봉투"],
-      },
-      {
-        english: "Yes, please.",
-        korean: "네 주세요",
-        words: ["주세요", "네"],
-      },
-    ],
-  },
-  office: {
-    title: "회사에서 회의하기",
-    sentences: [
-      {
-        english: "We need to adjust the schedule.",
-        korean: "일정 조율이 필요합니다",
-        words: ["필요합니다", "일정", "조율이"],
-      },
-      {
-        english: "I'll review it and get back to you.",
-        korean: "검토 후 말씀드리겠습니다",
-        words: ["말씀드리겠습니다", "검토", "후"],
-      },
-      {
-        english: "Let's wrap up the meeting.",
-        korean: "회의를 마무리하겠습니다",
-        words: ["마무리하겠습니다", "회의를"],
-      },
-    ],
-  },
-  friends: {
-    title: "친구와 약속잡기",
-    sentences: [
-      {
-        english: "Are you free this weekend?",
-        korean: "주말에 시간 있어",
-        words: ["있어", "주말에", "시간"],
-      },
-      {
-        english: "Where should we meet?",
-        korean: "어디서 만날까",
-        words: ["만날까", "어디서"],
-      },
-      {
-        english: "Let's meet at the station.",
-        korean: "역에서 만나자",
-        words: ["만나자", "역에서"],
-      },
-    ],
-  },
-  travel: {
-    title: "공항에서",
-    sentences: [
-      {
-        english: "Please show me your boarding pass.",
-        korean: "탑승권 보여주세요",
-        words: ["보여주세요", "탑승권"],
-      },
-      {
-        english: "Where is the gate?",
-        korean: "게이트가 어디예요",
-        words: ["어디예요", "게이트가"],
-      },
-      {
-        english: "What is the purpose of your visit?",
-        korean: "방문 목적이 뭐예요",
-        words: ["뭐예요", "방문", "목적이"],
-      },
-    ],
-  },
-};
+import { getScenarioById, type ConversationScenario } from "@/data/conversation";
 
 export default function ConversationQuizPage() {
   const params = useParams();
   const scenarioId = params.id as string;
-  const scenario = scenarioData[scenarioId];
+  const [scenario, setScenario] = useState<ConversationScenario | null>(null);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedWords, setSelectedWords] = useState<string[]>([]);
-  const [availableWords, setAvailableWords] = useState<string[]>(
-    scenario?.sentences[0]?.words || []
-  );
+  const [availableWords, setAvailableWords] = useState<string[]>([]);
   const [showResult, setShowResult] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
+  const [showKeyExpressions, setShowKeyExpressions] = useState(false);
+
+  useEffect(() => {
+    const foundScenario = getScenarioById(scenarioId);
+    if (foundScenario) {
+      setScenario(foundScenario);
+      // Shuffle the words for the first question
+      const shuffled = [...foundScenario.sentences[0].words].sort(() => Math.random() - 0.5);
+      setAvailableWords(shuffled);
+    }
+  }, [scenarioId]);
 
   if (!scenario) {
     return (
@@ -170,7 +59,8 @@ export default function ConversationQuizPage() {
 
   const handleReset = () => {
     setSelectedWords([]);
-    setAvailableWords(currentSentence.words);
+    const shuffled = [...currentSentence.words].sort(() => Math.random() - 0.5);
+    setAvailableWords(shuffled);
   };
 
   const handleCheck = () => {
@@ -185,7 +75,8 @@ export default function ConversationQuizPage() {
       const nextIndex = currentIndex + 1;
       setCurrentIndex(nextIndex);
       setSelectedWords([]);
-      setAvailableWords(scenario.sentences[nextIndex].words);
+      const shuffled = [...scenario.sentences[nextIndex].words].sort(() => Math.random() - 0.5);
+      setAvailableWords(shuffled);
       setShowResult(false);
     } else {
       setIsComplete(true);
@@ -239,6 +130,11 @@ export default function ConversationQuizPage() {
                 <p className="text-xl font-bold text-foreground">
                   &quot;{currentSentence.english}&quot;
                 </p>
+                {currentSentence.notes && (
+                  <p className="text-xs text-blue-600 mt-2 bg-blue-50 px-3 py-1 rounded-lg inline-block">
+                    💡 {currentSentence.notes}
+                  </p>
+                )}
               </div>
 
               {/* Answer Area */}
@@ -370,6 +266,41 @@ export default function ConversationQuizPage() {
                   </div>
                   <p className="text-sm text-muted">정답률</p>
                 </div>
+
+                {/* Key Expressions */}
+                {scenario.keyExpressions && scenario.keyExpressions.length > 0 && (
+                  <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-left">
+                    <button
+                      onClick={() => setShowKeyExpressions(!showKeyExpressions)}
+                      className="w-full flex items-center justify-between font-medium text-foreground"
+                    >
+                      <span className="flex items-center gap-2">
+                        <BookOpen className="w-4 h-4" />
+                        핵심 표현
+                      </span>
+                      <span>{showKeyExpressions ? "▲" : "▼"}</span>
+                    </button>
+                    {showKeyExpressions && (
+                      <div className="mt-3 space-y-2">
+                        {scenario.keyExpressions.map((expr, idx) => (
+                          <div key={idx} className="text-sm">
+                            <p className="font-bold text-primary">{expr.korean}</p>
+                            <p className="text-muted">{expr.english}</p>
+                            <p className="text-xs text-gray-400">{expr.usage}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Cultural Notes */}
+                {scenario.culturalNotes && (
+                  <div className="bg-amber-50 rounded-xl p-3 text-left text-sm">
+                    <p className="font-medium text-amber-800 mb-1">🇰🇷 문화 팁</p>
+                    <p className="text-amber-700">{scenario.culturalNotes}</p>
+                  </div>
+                )}
 
                 <Link
                   href="/study/conversation"

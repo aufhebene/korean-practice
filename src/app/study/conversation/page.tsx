@@ -1,63 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowLeft, ChevronRight, Coffee, ShoppingCart, Building2, Users, Plane } from "lucide-react";
+import { ArrowLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import Card from "@/components/ui/Card";
-
-// 회화 시나리오 데이터
-const scenarios = [
-  {
-    id: "cafe",
-    icon: Coffee,
-    title: "카페에서 주문하기",
-    description: "음료 주문, 결제, 포장/매장 표현",
-    level: 1,
-    sentences: 8,
-    preview: "아이스 아메리카노 주세요",
-    gradient: "from-amber-500 to-orange-500",
-  },
-  {
-    id: "shopping",
-    icon: ShoppingCart,
-    title: "마트에서 장보기",
-    description: "가격 묻기, 계산, 봉투 요청",
-    level: 1,
-    sentences: 10,
-    preview: "이거 얼마예요?",
-    gradient: "from-emerald-500 to-teal-500",
-  },
-  {
-    id: "office",
-    icon: Building2,
-    title: "회사에서 회의하기",
-    description: "일정 조율, 의견 제시, 마무리",
-    level: 3,
-    sentences: 12,
-    preview: "일정 조율이 필요합니다",
-    gradient: "from-blue-500 to-indigo-500",
-  },
-  {
-    id: "friends",
-    icon: Users,
-    title: "친구와 약속잡기",
-    description: "시간 정하기, 장소 정하기, 확인",
-    level: 1,
-    sentences: 8,
-    preview: "주말에 시간 있어?",
-    gradient: "from-pink-500 to-rose-500",
-  },
-  {
-    id: "travel",
-    icon: Plane,
-    title: "공항에서",
-    description: "체크인, 탑승, 입국심사",
-    level: 2,
-    sentences: 10,
-    preview: "탑승권 보여주세요",
-    gradient: "from-cyan-500 to-blue-500",
-  },
-];
+import { conversationScenarios, conversationCategories } from "@/data/conversation";
 
 const getLevelStars = (level: number) => {
   return "⭐".repeat(level) + "☆".repeat(3 - level);
@@ -88,8 +35,20 @@ export default function ConversationPage() {
       <div className="max-w-lg mx-auto px-4 py-6">
         <p className="text-muted mb-6">상황별 회화를 선택해서 학습하세요</p>
 
+        {/* Categories */}
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+          {conversationCategories.map((cat) => (
+            <button
+              key={cat.id}
+              className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium whitespace-nowrap hover:border-primary hover:text-primary transition-colors"
+            >
+              {cat.icon} {cat.name} ({cat.count})
+            </button>
+          ))}
+        </div>
+
         <div className="space-y-4">
-          {scenarios.map((scenario, index) => {
+          {conversationScenarios.map((scenario, index) => {
             const Icon = scenario.icon;
 
             return (
@@ -97,7 +56,7 @@ export default function ConversationPage() {
                 key={scenario.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * index }}
+                transition={{ delay: 0.05 * index }}
               >
                 <Link href={`/study/conversation/${scenario.id}`}>
                   <Card hover className="p-4">
@@ -121,12 +80,12 @@ export default function ConversationPage() {
                             {getLevelStars(scenario.level)} {getLevelText(scenario.level)}
                           </span>
                           <span className="text-xs text-muted">
-                            {scenario.sentences}문장
+                            {scenario.sentences.length}문장
                           </span>
                         </div>
 
                         <p className="text-sm text-primary mt-2 italic">
-                          &quot;{scenario.preview}&quot;
+                          &quot;{scenario.sentences[0]?.korean}&quot;
                         </p>
                       </div>
 
