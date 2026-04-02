@@ -1,78 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, X, CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
 import Mascot from "@/components/ui/Mascot";
 import Button from "@/components/ui/Button";
+import { grammarData, getRandomGrammar, type GrammarItem } from "@/data/grammar";
 
-// 문법 퀴즈 데이터
-const grammarQuizzes = [
-  {
-    id: 1,
-    sentence: "나[blank] 학교에 갑니다",
-    hint: "주어를 나타내는 조사",
-    correctAnswer: "는",
-    options: ["는", "를", "에", "와"],
-    explanation: "'는/은'은 주어를 나타내는 조사입니다.",
-  },
-  {
-    id: 2,
-    sentence: "사과[blank] 먹어요",
-    hint: "목적어를 나타내는 조사",
-    correctAnswer: "를",
-    options: ["가", "를", "은", "에서"],
-    explanation: "'를/을'은 목적어를 나타내는 조사입니다.",
-  },
-  {
-    id: 3,
-    sentence: "도서관[blank] 공부해요",
-    hint: "장소를 나타내는 조사",
-    correctAnswer: "에서",
-    options: ["에서", "를", "이", "와"],
-    explanation: "'에서'는 행동이 일어나는 장소를 나타냅니다.",
-  },
-  {
-    id: 4,
-    sentence: "친구[blank] 같이 갔어요",
-    hint: "함께를 나타내는 조사",
-    correctAnswer: "와",
-    options: ["는", "를", "에", "와"],
-    explanation: "'와/과'는 '함께'의 의미를 나타냅니다.",
-  },
-  {
-    id: 5,
-    sentence: "내일 학교[blank] 가요",
-    hint: "방향/목적지를 나타내는 조사",
-    correctAnswer: "에",
-    options: ["에서", "를", "에", "은"],
-    explanation: "'에'는 방향이나 목적지를 나타냅니다.",
-  },
-];
+const QUIZ_COUNT = 10;
 
 export default function GrammarStudyPage() {
+  const [quizItems, setQuizItems] = useState<GrammarItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
 
-  const currentQuiz = grammarQuizzes[currentIndex];
-  const progress = ((currentIndex + 1) / grammarQuizzes.length) * 100;
-  const isCorrect = selectedAnswer === currentQuiz?.correctAnswer;
+  useEffect(() => {
+    const items = getRandomGrammar(QUIZ_COUNT);
+    setQuizItems(items);
+  }, []);
+
+  const currentQuiz = quizItems[currentIndex];
+  const progress = quizItems.length > 0 ? ((currentIndex + 1) / quizItems.length) * 100 : 0;
+  const isCorrect = selectedAnswer === currentQuiz?.quiz.correctAnswer;
 
   const handleSelect = (answer: string) => {
-    if (showResult) return;
+    if (showResult || !currentQuiz) return;
     setSelectedAnswer(answer);
     setShowResult(true);
-    if (answer === currentQuiz.correctAnswer) {
+    if (answer === currentQuiz.quiz.correctAnswer) {
       setCorrectCount((prev) => prev + 1);
     }
   };
 
   const handleNext = () => {
-    if (currentIndex < grammarQuizzes.length - 1) {
+    if (currentIndex < quizItems.length - 1) {
       setCurrentIndex((prev) => prev + 1);
       setSelectedAnswer(null);
       setShowResult(false);
@@ -82,11 +47,12 @@ export default function GrammarStudyPage() {
   };
 
   const renderSentence = () => {
-    const parts = currentQuiz.sentence.split("[blank]");
+    if (!currentQuiz) return null;
+    const parts = currentQuiz.quiz.sentence.split("[blank]");
     return (
       <p className="text-2xl font-medium text-foreground">
         {parts[0]}
-        <span className="inline-block min-w-[50px] mx-1 px-3 py-1 border-b-2 border-purple-500 text-purple-600 font-bold">
+        <span className="inline-block min-w-[60px] mx-1 px-3 py-1 border-b-2 border-purple-500 text-purple-600 font-bold">
           {selectedAnswer || "___"}
         </span>
         {parts[1]}
@@ -98,14 +64,22 @@ export default function GrammarStudyPage() {
     if (!showResult) {
       return "bg-white border-gray-200 hover:border-purple-500 hover:bg-purple-50";
     }
-    if (option === currentQuiz.correctAnswer) {
+    if (option === currentQuiz?.quiz.correctAnswer) {
       return "bg-success text-white border-success";
     }
-    if (option === selectedAnswer && option !== currentQuiz.correctAnswer) {
+    if (option === selectedAnswer && option !== currentQuiz?.quiz.correctAnswer) {
       return "bg-error text-white border-error";
     }
     return "bg-gray-100 border-gray-200 opacity-50";
   };
+
+  if (quizItems.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted">로딩 중...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -132,7 +106,7 @@ export default function GrammarStudyPage() {
             />
           </div>
           <p className="text-xs text-muted text-center mt-2">
-            {currentIndex + 1} / {grammarQuizzes.length}
+            {currentIndex + 1} / {quizItems.length}
           </p>
         </div>
       </header>
@@ -153,15 +127,22 @@ export default function GrammarStudyPage() {
                 <Mascot
                   mood={showResult ? (isCorrect ? "excited" : "sad") : "thinking"}
                   size="sm"
-                  message="올바른 조사를 선택하세요"
+                  message="올바른 표현을 선택하세요"
                 />
+              </div>
+
+              {/* Grammar Info */}
+              <div className="bg-purple-50 rounded-xl px-4 py-2 text-center">
+                <span className="text-purple-700 font-medium text-sm">
+                  {currentQuiz.name} ({currentQuiz.pattern})
+                </span>
               </div>
 
               {/* Sentence Card */}
               <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
                 {renderSentence()}
                 <p className="text-muted text-sm mt-4">
-                  💡 힌트: {currentQuiz.hint}
+                  💡 힌트: {currentQuiz.quiz.hint}
                 </p>
               </div>
 
@@ -186,21 +167,29 @@ export default function GrammarStudyPage() {
                         </p>
                         {!isCorrect && (
                           <p className="text-sm text-muted">
-                            정답: <span className="font-bold">{currentQuiz.correctAnswer}</span>
+                            정답: <span className="font-bold">{currentQuiz.quiz.correctAnswer}</span>
                           </p>
                         )}
                       </div>
                     </div>
                     <p className="text-sm text-muted mt-3 bg-white/50 p-3 rounded-lg">
-                      📝 {currentQuiz.explanation}
+                      📝 {currentQuiz.explanation.ko}
                     </p>
+                    <div className="mt-3 text-sm text-muted">
+                      <p className="font-medium mb-1">예문:</p>
+                      {currentQuiz.examples.map((ex, idx) => (
+                        <p key={idx} className="ml-2">
+                          • {ex.sentence} <span className="text-gray-400">({ex.translation})</span>
+                        </p>
+                      ))}
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
               {/* Options */}
               <div className="grid grid-cols-2 gap-3">
-                {currentQuiz.options.map((option) => (
+                {currentQuiz.quiz.options.map((option) => (
                   <motion.button
                     key={option}
                     whileHover={!showResult ? { scale: 1.02 } : {}}
@@ -217,7 +206,7 @@ export default function GrammarStudyPage() {
               {/* Next Button */}
               {showResult && (
                 <Button onClick={handleNext} size="lg" className="w-full">
-                  {currentIndex < grammarQuizzes.length - 1 ? "다음 문제" : "결과 보기"}
+                  {currentIndex < quizItems.length - 1 ? "다음 문제" : "결과 보기"}
                 </Button>
               )}
             </motion.div>
@@ -233,23 +222,32 @@ export default function GrammarStudyPage() {
                 문법 학습 완료!
               </h2>
               <p className="text-muted mb-8">
-                {grammarQuizzes.length}문제 중 {correctCount}문제를 맞혔어요
+                {quizItems.length}문제 중 {correctCount}문제를 맞혔어요
               </p>
 
               <div className="w-full max-w-xs space-y-4">
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                   <div className="text-4xl font-bold text-purple-500 mb-1">
-                    {Math.round((correctCount / grammarQuizzes.length) * 100)}%
+                    {Math.round((correctCount / quizItems.length) * 100)}%
                   </div>
                   <p className="text-sm text-muted">정답률</p>
                 </div>
 
-                <Link
-                  href="/"
-                  className="block w-full bg-primary text-white py-3 px-6 rounded-xl font-medium text-center hover:bg-primary/90 transition-colors"
-                >
-                  홈으로 돌아가기
-                </Link>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => window.location.reload()}
+                    className="flex-1"
+                  >
+                    다시 학습
+                  </Button>
+                  <Link
+                    href="/"
+                    className="flex-1 bg-primary text-white py-3 px-6 rounded-xl font-medium text-center hover:bg-primary/90 transition-colors"
+                  >
+                    홈으로
+                  </Link>
+                </div>
               </div>
             </motion.div>
           )}
