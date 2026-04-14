@@ -1,16 +1,22 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Settings, BarChart3, Trophy, HelpCircle, LogOut, User, Flame, Star, BookOpen } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function ProfilePage() {
-  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { user, isLoading, logout, loadProfile } = useAuthStore();
 
-  if (status === "loading") {
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
+
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-muted">로딩 중...</p>
@@ -18,7 +24,7 @@ export default function ProfilePage() {
     );
   }
 
-  if (!session) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
         <div className="text-center">
@@ -38,15 +44,15 @@ export default function ProfilePage() {
   }
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: "/" });
+    logout();
+    router.push("/");
   };
 
-  // 임시 통계 데이터 (추후 DB에서 가져올 예정)
   const stats = {
     streak: 0,
     totalXp: 0,
-    wordsLearned: 0,
-    achievements: 0,
+    wordsLearned: user.progress?.vocabulary_mastered ?? 0,
+    lessonsCompleted: user.progress?.lessons_completed ?? 0,
   };
 
   return (
@@ -72,29 +78,14 @@ export default function ProfilePage() {
           className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6"
         >
           <div className="flex items-center gap-4">
-            {/* Avatar */}
-            <div className="relative">
-              {session.user?.image ? (
-                <Image
-                  src={session.user.image}
-                  alt="Profile"
-                  width={64}
-                  height={64}
-                  className="w-16 h-16 rounded-full"
-                />
-              ) : (
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full flex items-center justify-center">
-                  <User className="w-8 h-8 text-white" />
-                </div>
-              )}
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full flex items-center justify-center">
+              <User className="w-8 h-8 text-white" />
             </div>
-
-            {/* Info */}
             <div className="flex-1">
               <h2 className="font-bold text-lg text-foreground">
-                {session.user?.name || "사용자"}
+                {user.name}
               </h2>
-              <p className="text-sm text-muted">{session.user?.email}</p>
+              <p className="text-sm text-muted">@{user.username}</p>
             </div>
           </div>
         </motion.div>
@@ -119,12 +110,12 @@ export default function ProfilePage() {
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
             <BookOpen className="w-6 h-6 text-emerald-500 mx-auto mb-2" />
             <p className="text-2xl font-bold text-foreground">{stats.wordsLearned}</p>
-            <p className="text-xs text-muted">학습한 단어</p>
+            <p className="text-xs text-muted">마스터한 단어</p>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
             <Trophy className="w-6 h-6 text-purple-500 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-foreground">{stats.achievements}</p>
-            <p className="text-xs text-muted">획득 업적</p>
+            <p className="text-2xl font-bold text-foreground">{stats.lessonsCompleted}</p>
+            <p className="text-xs text-muted">완료한 레슨</p>
           </div>
         </motion.div>
 
@@ -141,7 +132,7 @@ export default function ProfilePage() {
           >
             <Settings className="w-5 h-5 text-muted" />
             <span className="flex-1 text-foreground">설정</span>
-            <span className="text-muted">→</span>
+            <span className="text-muted">&rarr;</span>
           </Link>
 
           <Link
@@ -150,16 +141,7 @@ export default function ProfilePage() {
           >
             <BarChart3 className="w-5 h-5 text-muted" />
             <span className="flex-1 text-foreground">상세 통계</span>
-            <span className="text-muted">→</span>
-          </Link>
-
-          <Link
-            href="/achievements"
-            className="flex items-center gap-4 px-4 py-4 hover:bg-gray-50 transition-colors border-b border-gray-100"
-          >
-            <Trophy className="w-5 h-5 text-muted" />
-            <span className="flex-1 text-foreground">업적 목록</span>
-            <span className="text-muted">→</span>
+            <span className="text-muted">&rarr;</span>
           </Link>
 
           <Link
@@ -168,7 +150,7 @@ export default function ProfilePage() {
           >
             <HelpCircle className="w-5 h-5 text-muted" />
             <span className="flex-1 text-foreground">도움말</span>
-            <span className="text-muted">→</span>
+            <span className="text-muted">&rarr;</span>
           </Link>
 
           <button

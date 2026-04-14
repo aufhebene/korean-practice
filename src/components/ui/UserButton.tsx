@@ -1,20 +1,19 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import Link from "next/link";
-import Image from "next/image";
 import { User } from "lucide-react";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function UserButton() {
-  const { data: session, status } = useSession();
+  const { user, isLoading } = useAuthStore();
 
-  if (status === "loading") {
+  if (isLoading) {
     return (
       <div className="w-10 h-10 bg-white/20 rounded-full animate-pulse" />
     );
   }
 
-  if (!session) {
+  if (!user) {
     return (
       <Link
         href="/auth/login"
@@ -27,19 +26,9 @@ export default function UserButton() {
 
   return (
     <Link href="/profile" className="block">
-      {session.user?.image ? (
-        <Image
-          src={session.user.image}
-          alt="Profile"
-          width={40}
-          height={40}
-          className="w-10 h-10 rounded-full border-2 border-white/50 hover:border-white transition-colors"
-        />
-      ) : (
-        <div className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors">
-          <User className="w-5 h-5 text-white" />
-        </div>
-      )}
+      <div className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors">
+        <User className="w-5 h-5 text-white" />
+      </div>
     </Link>
   );
 }
