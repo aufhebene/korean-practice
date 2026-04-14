@@ -11,6 +11,8 @@ import {
   getLevelName,
   type ListeningQuiz
 } from "@/data/listening";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { submitStudySession, type StudySessionItem } from "@/lib/api";
 
 const QUIZ_COUNT = 10;
 
@@ -26,6 +28,8 @@ export default function ListeningStudyPage() {
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
   const [isStarted, setIsStarted] = useState(false);
   const [playCount, setPlayCount] = useState(0);
+  const [results, setResults] = useState<StudySessionItem[]>([]);
+  const token = useAuthStore((s) => s.token);
 
   // 퀴즈 시작
   const startQuiz = (level?: number) => {
@@ -91,6 +95,9 @@ export default function ListeningStudyPage() {
     if (isCorrect) {
       setCorrectCount((prev) => prev + 1);
     }
+    if (currentQuiz) {
+      setResults((prev) => [...prev, { item_id: currentQuiz.id, correct: isCorrect }]);
+    }
   };
 
   const handleNext = () => {
@@ -105,6 +112,14 @@ export default function ListeningStudyPage() {
       setPlayCount(0);
     } else {
       setIsComplete(true);
+      if (token) {
+        submitStudySession(token, {
+          quiz_type: "listening",
+          score: results.filter((r) => r.correct).length,
+          total: quizItems.length,
+          items: results,
+        }).catch(() => {});
+      }
     }
   };
 

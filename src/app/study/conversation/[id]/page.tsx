@@ -7,6 +7,8 @@ import { ArrowLeft, X, CheckCircle, XCircle, RotateCcw, BookOpen } from "lucide-
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 import { getScenarioById, type ConversationScenario } from "@/data/conversation";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { submitStudySession, type StudySessionItem } from "@/lib/api";
 
 export default function ConversationQuizPage() {
   const params = useParams();
@@ -20,6 +22,8 @@ export default function ConversationQuizPage() {
   const [correctCount, setCorrectCount] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [showKeyExpressions, setShowKeyExpressions] = useState(false);
+  const [results, setResults] = useState<StudySessionItem[]>([]);
+  const token = useAuthStore((s) => s.token);
 
   useEffect(() => {
     const foundScenario = getScenarioById(scenarioId);
@@ -68,6 +72,7 @@ export default function ConversationQuizPage() {
     if (isCorrect) {
       setCorrectCount((prev) => prev + 1);
     }
+    setResults((prev) => [...prev, { item_id: `${scenarioId}:${currentIndex}`, correct: isCorrect }]);
   };
 
   const handleNext = () => {
@@ -80,6 +85,14 @@ export default function ConversationQuizPage() {
       setShowResult(false);
     } else {
       setIsComplete(true);
+      if (token) {
+        submitStudySession(token, {
+          quiz_type: "conversation",
+          score: results.filter((r) => r.correct).length,
+          total: scenario.sentences.length,
+          items: results,
+        }).catch(() => {});
+      }
     }
   };
 

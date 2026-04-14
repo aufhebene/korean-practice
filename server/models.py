@@ -26,6 +26,10 @@ class User(Base):
         "VocabularyProgress", back_populates="user",
         cascade="all, delete-orphan",
     )
+    study_sessions = relationship(
+        "StudySession", back_populates="user",
+        cascade="all, delete-orphan",
+    )
 
 
 class UserProgress(Base):
@@ -61,3 +65,16 @@ class VocabularyProgress(Base):
     next_review = Column(String)
 
     user = relationship("User", back_populates="vocabulary_progress")
+
+
+class StudySession(Base):
+    __tablename__ = "study_sessions"
+
+    id = Column(String, primary_key=True)
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    quiz_type = Column(String, nullable=False)
+    score = Column(Integer, nullable=False)
+    total = Column(Integer, nullable=False)
+    completed_at = Column(String, nullable=False)
+
+    user = relationship("User", back_populates="study_sessions")

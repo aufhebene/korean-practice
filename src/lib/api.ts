@@ -95,3 +95,44 @@ export async function updateProfile(
     body: JSON.stringify(data),
   });
 }
+
+// --- Study Sessions ---
+
+export interface StudySessionItem {
+  item_id: string;
+  correct: boolean;
+}
+
+export interface StudySessionRequest {
+  quiz_type: "vocabulary" | "grammar" | "listening" | "conversation";
+  score: number;
+  total: number;
+  items: StudySessionItem[];
+}
+
+export interface StudySessionResponse {
+  id: string;
+  quiz_type: string;
+  score: number;
+  total: number;
+  completed_at: string;
+}
+
+export async function submitStudySession(
+  token: string,
+  data: StudySessionRequest,
+): Promise<StudySessionResponse> {
+  return request("/progress/session", {
+    method: "POST",
+    headers: authHeaders(token),
+    body: JSON.stringify(data),
+  });
+}
+
+export async function getStudySessions(
+  token: string,
+): Promise<StudySessionResponse[]> {
+  return request("/progress/sessions", {
+    headers: authHeaders(token),
+  });
+}

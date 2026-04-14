@@ -1,20 +1,28 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Settings, BarChart3, Trophy, HelpCircle, LogOut, User, Flame, Star, BookOpen } from "lucide-react";
+import { ArrowLeft, Settings, BarChart3, Trophy, HelpCircle, LogOut, User, Flame, Star, BookOpen, Clock } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { getStudySessions, type StudySessionResponse } from "@/lib/api";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, isLoading, logout, loadProfile } = useAuthStore();
+  const { user, token, isLoading, logout, loadProfile } = useAuthStore();
+  const [sessions, setSessions] = useState<StudySessionResponse[]>([]);
 
   useEffect(() => {
     loadProfile();
   }, [loadProfile]);
+
+  useEffect(() => {
+    if (token) {
+      getStudySessions(token).then(setSessions).catch(() => {});
+    }
+  }, [token]);
 
   if (isLoading) {
     return (
@@ -118,6 +126,48 @@ export default function ProfilePage() {
             <p className="text-xs text-muted">완료한 레슨</p>
           </div>
         </motion.div>
+
+        {/* Recent Study Sessions */}
+        {sessions.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6"
+          >
+            <h3 className="font-bold text-foreground mb-3 flex items-center gap-2">
+              <Clock className="w-4 h-4 text-muted" />
+              최근 학습
+            </h3>
+            <div className="space-y-3">
+              {sessions.slice(0, 5).map((s) => {
+                const quizLabel = { vocabulary: "어휘", grammar: "문법", listening: "듣기", conversation: "회화" }[s.quiz_type] ?? s.quiz_type;
+                const pct = s.total > 0 ? Math.round((s.score / s.total) * 100) : 0;
+                const date = new Date(s.completed_at);
+                return (
+                  <div key={s.id} className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                        {quizLabel}
+                      </span>
+                      <span className="text-muted">
+                        {s.score}/{s.total}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`font-bold ${pct >= 80 ? "text-success" : pct >= 50 ? "text-amber-500" : "text-error"}`}>
+                        {pct}%
+                      </span>
+                      <span className="text-xs text-muted">
+                        {date.toLocaleDateString("ko-KR", { month: "short", day: "numeric" })}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
 
         {/* Menu List */}
         <motion.div

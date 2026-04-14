@@ -5,13 +5,17 @@ from sqlalchemy.orm import Session
 
 from server.auth import get_current_user
 from server.database import get_db
-from server.models import User, LessonProgress, VocabularyProgress
+from server.models import User, LessonProgress, VocabularyProgress, StudySession
 from server.schemas import (
     LessonProgressUpdate,
     LessonProgressResponse,
     VocabularyPracticeRecord,
     VocabularyProgressResponse,
+    StudySessionRequest,
+    StudySessionResponse,
 )
+
+import hashlib
 
 router = APIRouter(prefix="/progress", tags=["progress"])
 
@@ -174,3 +178,92 @@ def record_vocabulary_practice(
         next_review=row.next_review,
         mastered=_is_mastered(row.attempts, row.correct),
     )
+
+
+# --- Study Sessions ---
+
+@router.post("/session", response_model=StudySessionResponse)
+def submit_study_session(
+    req: StudySessionRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    now = datetime.now(timezone.utc).isoformat()
+    session_id = hashlib.sha256(
+        f"{current_user.id}:{now}".encode()
+    ).hexdigest()[:16]
+
+    session = StudySession(
+        id=session_id,
+        user_id=current_user.id,
+        quiz_type=req.quiz_type,
+        score=req.score,
+        total=req.total,
+        completed_at=now,
+    )
+    db.add(session)
+
+    # Upsert per-item progress
+    for item in req.items:
+        row = (
+            db.query(VocabularyProgress)
+            .filter(
+                VocabularyProgress.user_id == current_user.id,
+                VocabularyProgress.word_id == item.item_id,
+            )
+            .first()
+        )
+        if row:
+            row.attempts += 1
+            if item.correct:
+                row.correct += 1
+            row.last_practiced = now
+            row.next_review = _calculate_next_review(row.attempts, row.correct)
+        else:
+            correct_val = 1 if item.correct else 0
+            row = VocabularyProgress(
+                user_id=current_user.id,
+                word_id=item.item_id,
+                attempts=1,
+                correct=correct_val,
+                last_practiced=now,
+                next_review=_calculate_next_review(1, correct_val),
+            )
+            db.add(row)
+
+    # Update aggregate counters
+    db.flush()
+    all_items = (
+        db.query(VocabularyProgress)
+        .filter(VocabularyProgress.user_id == current_user.id)
+        .all()
+    )
+    vocab_mastered = sum(
+        1 for v in all_items
+        if v.word_id.startswith("v") and _is_mastered(v.attempts, v.correct)
+    )
+    grammar_learned = sum(
+        1 for v in all_items
+        if v.word_id.startswith("g") and _is_mastered(v.attempts, v.correct)
+    )
+    current_user.progress.vocabulary_mastered = vocab_mastered
+    current_user.progress.grammar_points_learned = grammar_learned
+
+    db.commit()
+    db.refresh(session)
+    return session
+
+
+@router.get("/sessions", response_model=list[StudySessionResponse])
+def get_study_sessions(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    rows = (
+        db.query(StudySession)
+        .filter(StudySession.user_id == current_user.id)
+        .order_by(StudySession.completed_at.desc())
+        .limit(50)
+        .all()
+    )
+    return rows

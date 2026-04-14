@@ -100,6 +100,37 @@ class VocabularyProgressResponse(BaseModel):
     mastered: bool = False
 
 
+# --- Study Session ---
+
+class StudySessionItem(BaseModel):
+    item_id: str
+    correct: bool
+
+
+class StudySessionRequest(BaseModel):
+    quiz_type: str
+    score: int
+    total: int
+    items: list[StudySessionItem] = []
+
+    @field_validator("quiz_type")
+    @classmethod
+    def validate_quiz_type(cls, v: str) -> str:
+        if v not in ("vocabulary", "grammar", "listening", "conversation"):
+            raise ValueError("quiz_type must be vocabulary, grammar, listening, or conversation")
+        return v
+
+
+class StudySessionResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    quiz_type: str
+    score: int
+    total: int
+    completed_at: str
+
+
 # --- Review ---
 
 class ReviewWordResponse(BaseModel):

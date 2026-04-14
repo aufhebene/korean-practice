@@ -7,7 +7,10 @@ import Link from "next/link";
 import Mascot from "@/components/ui/Mascot";
 import Button from "@/components/ui/Button";
 import { vocabularyData, generateQuizOptions, getRandomVocabulary } from "@/data/vocabulary";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { submitStudySession } from "@/lib/api";
 import type { Vocabulary } from "@/types";
+import type { StudySessionItem } from "@/lib/api";
 
 const QUIZ_COUNT = 10; // 한 세션당 10문제
 
@@ -19,6 +22,8 @@ export default function VocabularyStudyPage() {
   const [correctCount, setCorrectCount] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [options, setOptions] = useState<string[]>([]);
+  const [results, setResults] = useState<StudySessionItem[]>([]);
+  const token = useAuthStore((s) => s.token);
 
   // 퀴즈 초기화
   useEffect(() => {
@@ -37,9 +42,11 @@ export default function VocabularyStudyPage() {
     if (showResult || !currentQuiz) return;
     setSelectedAnswer(answer);
     setShowResult(true);
-    if (answer === currentQuiz.meanings.en) {
+    const correct = answer === currentQuiz.meanings.en;
+    if (correct) {
       setCorrectCount((prev) => prev + 1);
     }
+    setResults((prev) => [...prev, { item_id: currentQuiz.id, correct }]);
   };
 
   const handleNext = () => {
@@ -51,6 +58,14 @@ export default function VocabularyStudyPage() {
       setOptions(generateQuizOptions(quizWords[nextIndex]));
     } else {
       setIsComplete(true);
+      if (token) {
+        submitStudySession(token, {
+          quiz_type: "vocabulary",
+          score: results.filter((r) => r.correct).length,
+          total: quizWords.length,
+          items: results,
+        }).catch(() => {});
+      }
     }
   };
 
