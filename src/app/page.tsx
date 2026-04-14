@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { BookOpen, MessageCircle, Headphones, PenTool, ChevronRight, Sparkles, RotateCcw, Zap } from "lucide-react";
 import Link from "next/link";
@@ -7,6 +8,8 @@ import Mascot from "@/components/ui/Mascot";
 import StreakBadge from "@/components/ui/StreakBadge";
 import Card from "@/components/ui/Card";
 import UserButton from "@/components/ui/UserButton";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { getStats, type UserStats } from "@/lib/api";
 import { LucideIcon } from "lucide-react";
 
 type QuizStats = { new: number; review: number; retry: number };
@@ -73,7 +76,19 @@ const modules: StudyModule[] = [
 ];
 
 export default function HomePage() {
-  const streak = 12;
+  const token = useAuthStore((s) => s.token);
+  const [stats, setStats] = useState<UserStats | null>(null);
+
+  useEffect(() => {
+    if (token) {
+      getStats(token).then(setStats).catch(() => {});
+    }
+  }, [token]);
+
+  const streak = stats?.streak ?? 0;
+  const totalStudied = stats?.total_studied ?? 0;
+  const mastered = stats?.mastered ?? 0;
+  const accuracy = stats?.accuracy ?? 0;
 
   return (
     <main className="min-h-screen pb-8">
@@ -104,7 +119,6 @@ export default function HomePage() {
         <section className="space-y-3">
           {modules.map((module, index) => {
             const Icon = module.icon;
-            const hasQuizStats = "new" in module.stats;
 
             return (
               <motion.div
@@ -174,15 +188,15 @@ export default function HomePage() {
           <Card className="p-5">
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
-                <p className="text-3xl font-bold text-primary">42</p>
+                <p className="text-3xl font-bold text-primary">{totalStudied}</p>
                 <p className="text-sm text-muted">학습한 단어</p>
               </div>
               <div>
-                <p className="text-3xl font-bold text-success">28</p>
+                <p className="text-3xl font-bold text-success">{mastered}</p>
                 <p className="text-sm text-muted">마스터</p>
               </div>
               <div>
-                <p className="text-3xl font-bold text-accent">85%</p>
+                <p className="text-3xl font-bold text-accent">{accuracy}%</p>
                 <p className="text-sm text-muted">정답률</p>
               </div>
             </div>

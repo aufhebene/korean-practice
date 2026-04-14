@@ -7,12 +7,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { getStudySessions, type StudySessionResponse } from "@/lib/api";
+import { getStudySessions, getStats, type StudySessionResponse, type UserStats } from "@/lib/api";
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, token, isLoading, logout, loadProfile } = useAuthStore();
   const [sessions, setSessions] = useState<StudySessionResponse[]>([]);
+  const [stats, setStats] = useState<UserStats | null>(null);
 
   useEffect(() => {
     loadProfile();
@@ -21,6 +22,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (token) {
       getStudySessions(token).then(setSessions).catch(() => {});
+      getStats(token).then(setStats).catch(() => {});
     }
   }, [token]);
 
@@ -56,11 +58,11 @@ export default function ProfilePage() {
     router.push("/");
   };
 
-  const stats = {
-    streak: 0,
-    totalXp: 0,
-    wordsLearned: user.progress?.vocabulary_mastered ?? 0,
-    lessonsCompleted: user.progress?.lessons_completed ?? 0,
+  const profileStats = {
+    streak: stats?.streak ?? 0,
+    accuracy: stats?.accuracy ?? 0,
+    wordsLearned: stats?.total_studied ?? 0,
+    mastered: stats?.mastered ?? 0,
   };
 
   return (
@@ -107,23 +109,23 @@ export default function ProfilePage() {
         >
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
             <Flame className="w-6 h-6 text-orange-500 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-foreground">{stats.streak}</p>
+            <p className="text-2xl font-bold text-foreground">{profileStats.streak}</p>
             <p className="text-xs text-muted">연속 학습</p>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
             <Star className="w-6 h-6 text-amber-500 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-foreground">{stats.totalXp}</p>
-            <p className="text-xs text-muted">총 XP</p>
+            <p className="text-2xl font-bold text-foreground">{profileStats.accuracy}%</p>
+            <p className="text-xs text-muted">정답률</p>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
             <BookOpen className="w-6 h-6 text-emerald-500 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-foreground">{stats.wordsLearned}</p>
-            <p className="text-xs text-muted">마스터한 단어</p>
+            <p className="text-2xl font-bold text-foreground">{profileStats.wordsLearned}</p>
+            <p className="text-xs text-muted">학습한 단어</p>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
             <Trophy className="w-6 h-6 text-purple-500 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-foreground">{stats.lessonsCompleted}</p>
-            <p className="text-xs text-muted">완료한 레슨</p>
+            <p className="text-2xl font-bold text-foreground">{profileStats.mastered}</p>
+            <p className="text-xs text-muted">마스터한 단어</p>
           </div>
         </motion.div>
 

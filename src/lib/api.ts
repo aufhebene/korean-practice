@@ -96,6 +96,22 @@ export async function updateProfile(
   });
 }
 
+// --- User Stats ---
+
+export interface UserStats {
+  total_studied: number;
+  mastered: number;
+  accuracy: number;
+  streak: number;
+  total_sessions: number;
+}
+
+export async function getStats(token: string): Promise<UserStats> {
+  return request("/users/me/stats", {
+    headers: authHeaders(token),
+  });
+}
+
 // --- Study Sessions ---
 
 export interface StudySessionItem {
