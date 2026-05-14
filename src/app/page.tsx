@@ -9,7 +9,7 @@ import StreakBadge from "@/components/ui/StreakBadge";
 import Card from "@/components/ui/Card";
 import UserButton from "@/components/ui/UserButton";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { getStats, type UserStats } from "@/lib/api";
+import { getStats, type UserStats } from "@/lib/firestore";
 import { LucideIcon } from "lucide-react";
 
 type QuizStats = { new: number; review: number; retry: number };
@@ -76,17 +76,17 @@ const modules: StudyModule[] = [
 ];
 
 export default function HomePage() {
-  const token = useAuthStore((s) => s.token);
+  const uid = useAuthStore((s) => s.user?.uid);
   const [stats, setStats] = useState<UserStats | null>(null);
 
   useEffect(() => {
-    if (token) {
-      getStats(token).then(setStats).catch(() => {});
+    if (uid) {
+      getStats(uid).then(setStats).catch(() => {});
     }
-  }, [token]);
+  }, [uid]);
 
   const streak = stats?.streak ?? 0;
-  const totalStudied = stats?.total_studied ?? 0;
+  const totalStudied = stats?.totalStudied ?? 0;
   const mastered = stats?.mastered ?? 0;
   const accuracy = stats?.accuracy ?? 0;
 

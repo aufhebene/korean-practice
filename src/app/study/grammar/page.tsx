@@ -8,7 +8,7 @@ import Mascot from "@/components/ui/Mascot";
 import Button from "@/components/ui/Button";
 import { grammarData, getRandomGrammar, type GrammarItem } from "@/data/grammar";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { submitStudySession, type StudySessionItem } from "@/lib/api";
+import { submitStudySession, type StudySessionItem } from "@/lib/firestore";
 
 const QUIZ_COUNT = 10;
 
@@ -20,7 +20,7 @@ export default function GrammarStudyPage() {
   const [correctCount, setCorrectCount] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [results, setResults] = useState<StudySessionItem[]>([]);
-  const token = useAuthStore((s) => s.token);
+  const uid = useAuthStore((s) => s.user?.uid);
 
   useEffect(() => {
     const items = getRandomGrammar(QUIZ_COUNT);
@@ -39,7 +39,7 @@ export default function GrammarStudyPage() {
     if (correct) {
       setCorrectCount((prev) => prev + 1);
     }
-    setResults((prev) => [...prev, { item_id: currentQuiz.id, correct }]);
+    setResults((prev) => [...prev, { itemId: currentQuiz.id, correct }]);
   };
 
   const handleNext = () => {
@@ -49,9 +49,9 @@ export default function GrammarStudyPage() {
       setShowResult(false);
     } else {
       setIsComplete(true);
-      if (token) {
-        submitStudySession(token, {
-          quiz_type: "grammar",
+      if (uid) {
+        submitStudySession(uid, {
+          quizType: "grammar",
           score: results.filter((r) => r.correct).length,
           total: quizItems.length,
           items: results,

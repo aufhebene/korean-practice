@@ -6,11 +6,11 @@ import { ArrowLeft, X, CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
 import Mascot from "@/components/ui/Mascot";
 import Button from "@/components/ui/Button";
+import SpeakButton from "@/components/ui/SpeakButton";
 import { vocabularyData, generateQuizOptions, getRandomVocabulary } from "@/data/vocabulary";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { submitStudySession } from "@/lib/api";
+import { submitStudySession, type StudySessionItem } from "@/lib/firestore";
 import type { Vocabulary } from "@/types";
-import type { StudySessionItem } from "@/lib/api";
 
 const QUIZ_COUNT = 10; // 한 세션당 10문제
 
@@ -23,7 +23,7 @@ export default function VocabularyStudyPage() {
   const [isComplete, setIsComplete] = useState(false);
   const [options, setOptions] = useState<string[]>([]);
   const [results, setResults] = useState<StudySessionItem[]>([]);
-  const token = useAuthStore((s) => s.token);
+  const uid = useAuthStore((s) => s.user?.uid);
 
   // 퀴즈 초기화
   useEffect(() => {
@@ -46,7 +46,7 @@ export default function VocabularyStudyPage() {
     if (correct) {
       setCorrectCount((prev) => prev + 1);
     }
-    setResults((prev) => [...prev, { item_id: currentQuiz.id, correct }]);
+    setResults((prev) => [...prev, { itemId: currentQuiz.id, correct }]);
   };
 
   const handleNext = () => {
@@ -58,9 +58,9 @@ export default function VocabularyStudyPage() {
       setOptions(generateQuizOptions(quizWords[nextIndex]));
     } else {
       setIsComplete(true);
-      if (token) {
-        submitStudySession(token, {
-          quiz_type: "vocabulary",
+      if (uid) {
+        submitStudySession(uid, {
+          quizType: "vocabulary",
           score: results.filter((r) => r.correct).length,
           total: quizWords.length,
           items: results,
@@ -142,13 +142,19 @@ export default function VocabularyStudyPage() {
 
               {/* Word Card */}
               <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
-                <p className="text-4xl font-bold text-foreground mb-2">
-                  {currentQuiz.korean}
-                </p>
+                <div className="flex items-center justify-center gap-3 mb-2">
+                  <p className="text-4xl font-bold text-foreground">
+                    {currentQuiz.korean}
+                  </p>
+                  <SpeakButton text={currentQuiz.korean} size="md" />
+                </div>
                 <p className="text-muted text-sm">{currentQuiz.pronunciation}</p>
-                <p className="text-muted text-xs mt-4 bg-gray-50 px-3 py-2 rounded-lg inline-block">
-                  예: {currentQuiz.examples[0]}
-                </p>
+                <div className="mt-4 inline-flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg">
+                  <p className="text-muted text-xs">
+                    예: {currentQuiz.examples[0]}
+                  </p>
+                  <SpeakButton text={currentQuiz.examples[0]} size="sm" variant="ghost" />
+                </div>
               </div>
 
               {/* Result Feedback */}

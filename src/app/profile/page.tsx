@@ -6,25 +6,26 @@ import { ArrowLeft, Settings, BarChart3, Trophy, HelpCircle, LogOut, User, Flame
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
+import ReminderSettings from "@/components/ui/ReminderSettings";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { getStudySessions, getStats, type StudySessionResponse, type UserStats } from "@/lib/api";
+import { getRecentStudySessions, getStats, type StudySessionDoc, type UserStats } from "@/lib/firestore";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, token, isLoading, logout, loadProfile } = useAuthStore();
-  const [sessions, setSessions] = useState<StudySessionResponse[]>([]);
+  const { user, isLoading, signOut, reloadUserDoc } = useAuthStore();
+  const [sessions, setSessions] = useState<StudySessionDoc[]>([]);
   const [stats, setStats] = useState<UserStats | null>(null);
 
   useEffect(() => {
-    loadProfile();
-  }, [loadProfile]);
+    void reloadUserDoc();
+  }, [reloadUserDoc]);
 
   useEffect(() => {
-    if (token) {
-      getStudySessions(token).then(setSessions).catch(() => {});
-      getStats(token).then(setStats).catch(() => {});
+    if (user?.uid) {
+      getRecentStudySessions(user.uid, 50).then(setSessions).catch(() => {});
+      getStats(user.uid).then(setStats).catch(() => {});
     }
-  }, [token]);
+  }, [user?.uid]);
 
   if (isLoading) {
     return (
@@ -53,15 +54,15 @@ export default function ProfilePage() {
     );
   }
 
-  const handleSignOut = () => {
-    logout();
+  const handleSignOut = async () => {
+    await signOut();
     router.push("/");
   };
 
   const profileStats = {
     streak: stats?.streak ?? 0,
     accuracy: stats?.accuracy ?? 0,
-    wordsLearned: stats?.total_studied ?? 0,
+    wordsLearned: stats?.totalStudied ?? 0,
     mastered: stats?.mastered ?? 0,
   };
 
@@ -91,11 +92,11 @@ export default function ProfilePage() {
             <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full flex items-center justify-center">
               <User className="w-8 h-8 text-white" />
             </div>
-            <div className="flex-1">
-              <h2 className="font-bold text-lg text-foreground">
+            <div className="flex-1 min-w-0">
+              <h2 className="font-bold text-lg text-foreground truncate">
                 {user.name}
               </h2>
-              <p className="text-sm text-muted">@{user.username}</p>
+              <p className="text-sm text-muted truncate">{user.email}</p>
             </div>
           </div>
         </motion.div>
@@ -143,9 +144,8 @@ export default function ProfilePage() {
             </h3>
             <div className="space-y-3">
               {sessions.slice(0, 5).map((s) => {
-                const quizLabel = { vocabulary: "어휘", grammar: "문법", listening: "듣기", conversation: "회화" }[s.quiz_type] ?? s.quiz_type;
+                const quizLabel = { vocabulary: "어휘", grammar: "문법", listening: "듣기", conversation: "회화" }[s.quizType] ?? s.quizType;
                 const pct = s.total > 0 ? Math.round((s.score / s.total) * 100) : 0;
-                const date = new Date(s.completed_at);
                 return (
                   <div key={s.id} className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-2">
@@ -161,7 +161,7 @@ export default function ProfilePage() {
                         {pct}%
                       </span>
                       <span className="text-xs text-muted">
-                        {date.toLocaleDateString("ko-KR", { month: "short", day: "numeric" })}
+                        {s.completedAt.toLocaleDateString("ko-KR", { month: "short", day: "numeric" })}
                       </span>
                     </div>
                   </div>
@@ -170,6 +170,16 @@ export default function ProfilePage() {
             </div>
           </motion.div>
         )}
+
+        {/* Reminder Settings */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18 }}
+          className="mb-6"
+        >
+          <ReminderSettings />
+        </motion.div>
 
         {/* Menu List */}
         <motion.div

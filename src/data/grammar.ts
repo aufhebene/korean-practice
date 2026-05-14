@@ -475,13 +475,575 @@ export const grammarData: GrammarItem[] = [
       options: ["지 마세요", "으세요", "었어요", "을 거예요"],
     },
   },
+
+  // ==========================================
+  // 조사 추가 (Particles, Level 1-2) - 5개
+  // ==========================================
+  {
+    id: "g021",
+    pattern: "의",
+    name: "소유격 조사",
+    category: "particle",
+    level: 1,
+    explanation: {
+      ko: "소유나 소속을 나타내는 조사입니다. 영어의 's나 of에 해당합니다.",
+      en: "Possessive marker, equivalent to 's or 'of' in English.",
+    },
+    examples: [
+      { sentence: "친구의 책이에요.", translation: "It's my friend's book." },
+      { sentence: "한국의 음식을 좋아해요.", translation: "I like Korean food." },
+    ],
+    quiz: {
+      sentence: "선생님[blank] 가방이에요",
+      blank: "[blank]",
+      hint: "소유를 나타내는 조사",
+      correctAnswer: "의",
+      options: ["의", "이", "는", "에"],
+    },
+  },
+  {
+    id: "g022",
+    pattern: "도",
+    name: "역시 조사",
+    category: "particle",
+    level: 1,
+    explanation: {
+      ko: "'또한, 역시'의 의미를 나타내는 조사입니다. 영어의 'also/too'에 해당합니다.",
+      en: "Particle meaning 'also/too', adds to the previous statement.",
+    },
+    examples: [
+      { sentence: "저도 학생이에요.", translation: "I'm also a student." },
+      { sentence: "커피도 마실래요?", translation: "Would you also like coffee?" },
+    ],
+    quiz: {
+      sentence: "저[blank] 한국어를 배워요",
+      blank: "[blank]",
+      hint: "'역시'의 의미",
+      correctAnswer: "도",
+      options: ["도", "는", "이", "를"],
+    },
+  },
+  {
+    id: "g023",
+    pattern: "만",
+    name: "한정 조사",
+    category: "particle",
+    level: 2,
+    explanation: {
+      ko: "'오직, 단지'의 의미로 한정을 나타냅니다. 영어의 'only'에 해당합니다.",
+      en: "Particle meaning 'only', limits to a single item.",
+    },
+    examples: [
+      { sentence: "물만 주세요.", translation: "Just water, please." },
+      { sentence: "한 명만 왔어요.", translation: "Only one person came." },
+    ],
+    quiz: {
+      sentence: "오늘은 저[blank] 갈 거예요",
+      blank: "[blank]",
+      hint: "'오직'의 의미",
+      correctAnswer: "만",
+      options: ["만", "도", "는", "에"],
+    },
+  },
+  {
+    id: "g024",
+    pattern: "부터",
+    name: "시작점 조사",
+    category: "particle",
+    level: 2,
+    explanation: {
+      ko: "시간이나 순서의 시작점을 나타냅니다. 영어의 'from'에 해당합니다.",
+      en: "Particle marking the starting point of time or order, equivalent to 'from'.",
+    },
+    examples: [
+      { sentence: "9시부터 일해요.", translation: "I work from 9 o'clock." },
+      { sentence: "처음부터 다시 해요.", translation: "Let's do it again from the start." },
+    ],
+    quiz: {
+      sentence: "내일[blank] 휴가예요",
+      blank: "[blank]",
+      hint: "시작점을 나타내는 조사",
+      correctAnswer: "부터",
+      options: ["부터", "까지", "에서", "에"],
+    },
+  },
+  {
+    id: "g025",
+    pattern: "까지",
+    name: "도달점 조사",
+    category: "particle",
+    level: 2,
+    explanation: {
+      ko: "시간이나 장소의 끝점을 나타냅니다. 영어의 'until/to'에 해당합니다.",
+      en: "Particle marking the ending point or destination, equivalent to 'until/to'.",
+    },
+    examples: [
+      { sentence: "6시까지 일해요.", translation: "I work until 6 o'clock." },
+      { sentence: "집까지 걸어가요.", translation: "I walk all the way home." },
+    ],
+    quiz: {
+      sentence: "주말[blank] 끝내야 해요",
+      blank: "[blank]",
+      hint: "도달점을 나타내는 조사",
+      correctAnswer: "까지",
+      options: ["까지", "부터", "에서", "도"],
+    },
+  },
+
+  // ==========================================
+  // 어미 추가 (Endings, Level 2) - 8개
+  // ==========================================
+  {
+    id: "g026",
+    pattern: "-(으)면",
+    name: "조건/가정 어미",
+    category: "ending",
+    level: 2,
+    explanation: {
+      ko: "조건이나 가정을 나타내는 연결 어미입니다. 영어의 'if'에 해당합니다.",
+      en: "Connective ending expressing condition or hypothesis, equivalent to 'if'.",
+    },
+    examples: [
+      { sentence: "비가 오면 집에 있어요.", translation: "If it rains, I stay home." },
+      { sentence: "시간이 있으면 만나요.", translation: "If you have time, let's meet." },
+    ],
+    quiz: {
+      sentence: "돈이 [blank] 여행 갈 거예요",
+      blank: "[blank]",
+      hint: "조건을 나타내는 어미",
+      correctAnswer: "있으면",
+      options: ["있으면", "있어서", "있고", "있지만"],
+    },
+  },
+  {
+    id: "g027",
+    pattern: "-(으)니까",
+    name: "이유 어미",
+    category: "ending",
+    level: 2,
+    explanation: {
+      ko: "이유나 원인을 나타내는 연결 어미로, 명령/제안과 함께 자주 쓰입니다.",
+      en: "Connective ending expressing reason, often paired with commands or suggestions.",
+    },
+    examples: [
+      { sentence: "비가 오니까 우산을 가져가세요.", translation: "Since it's raining, take an umbrella." },
+      { sentence: "피곤하니까 일찍 자요.", translation: "I'm tired, so I'll sleep early." },
+    ],
+    quiz: {
+      sentence: "시간이 없[blank] 빨리 가요",
+      blank: "[blank]",
+      hint: "이유를 나타내는 어미",
+      correctAnswer: "으니까",
+      options: ["으니까", "지만", "고", "어서"],
+    },
+  },
+  {
+    id: "g028",
+    pattern: "-지만",
+    name: "대조 어미",
+    category: "ending",
+    level: 2,
+    explanation: {
+      ko: "두 문장을 대조적으로 연결하는 어미입니다. 영어의 'but'에 해당합니다.",
+      en: "Connective ending expressing contrast, equivalent to 'but'.",
+    },
+    examples: [
+      { sentence: "비싸지만 맛있어요.", translation: "It's expensive but delicious." },
+      { sentence: "가고 싶지만 시간이 없어요.", translation: "I want to go but don't have time." },
+    ],
+    quiz: {
+      sentence: "한국어가 어렵[blank] 재미있어요",
+      blank: "[blank]",
+      hint: "대조를 나타내는 어미",
+      correctAnswer: "지만",
+      options: ["지만", "어서", "면", "고"],
+    },
+  },
+  {
+    id: "g029",
+    pattern: "-고",
+    name: "나열/순차 어미",
+    category: "ending",
+    level: 2,
+    explanation: {
+      ko: "두 가지 이상의 동작이나 상태를 나열하거나 순서대로 연결합니다.",
+      en: "Connective ending listing actions or states in sequence, equivalent to 'and'.",
+    },
+    examples: [
+      { sentence: "밥을 먹고 학교에 가요.", translation: "I eat and then go to school." },
+      { sentence: "이 옷은 예쁘고 싸요.", translation: "These clothes are pretty and cheap." },
+    ],
+    quiz: {
+      sentence: "샤워를 하[blank] 잤어요",
+      blank: "[blank]",
+      hint: "순서를 나타내는 어미",
+      correctAnswer: "고",
+      options: ["고", "면", "지만", "니까"],
+    },
+  },
+  {
+    id: "g030",
+    pattern: "-아/어서",
+    name: "이유/순서 어미",
+    category: "ending",
+    level: 2,
+    explanation: {
+      ko: "이유나 시간적 선행을 나타내는 연결 어미입니다. 명령/청유와 함께 쓰지 않습니다.",
+      en: "Connective ending expressing reason or sequence; cannot be used with commands or suggestions.",
+    },
+    examples: [
+      { sentence: "늦어서 죄송해요.", translation: "I'm sorry for being late." },
+      { sentence: "친구를 만나서 영화를 봤어요.", translation: "I met a friend and watched a movie." },
+    ],
+    quiz: {
+      sentence: "배가 고프[blank] 밥을 먹었어요",
+      blank: "[blank]",
+      hint: "이유를 나타내는 어미",
+      correctAnswer: "아서",
+      options: ["아서", "지만", "고", "면"],
+    },
+  },
+  {
+    id: "g031",
+    pattern: "-(으)러 가다/오다",
+    name: "목적 어미",
+    category: "ending",
+    level: 2,
+    explanation: {
+      ko: "이동의 목적을 나타냅니다. '~하러 가다/오다'의 형태로 씁니다.",
+      en: "Expresses the purpose of movement, used with verbs of motion.",
+    },
+    examples: [
+      { sentence: "밥을 먹으러 가요.", translation: "I'm going to eat." },
+      { sentence: "친구를 만나러 왔어요.", translation: "I came to meet a friend." },
+    ],
+    quiz: {
+      sentence: "책을 사[blank] 서점에 가요",
+      blank: "[blank]",
+      hint: "목적을 나타내는 어미",
+      correctAnswer: "러",
+      options: ["러", "면", "고", "어서"],
+    },
+  },
+  {
+    id: "g032",
+    pattern: "-기 전에",
+    name: "선행 시간 표현",
+    category: "ending",
+    level: 2,
+    explanation: {
+      ko: "어떤 동작 이전을 나타냅니다. 영어의 'before ~ing'에 해당합니다.",
+      en: "Expresses time before an action, equivalent to 'before ~ing'.",
+    },
+    examples: [
+      { sentence: "자기 전에 책을 읽어요.", translation: "I read a book before sleeping." },
+      { sentence: "먹기 전에 손을 씻으세요.", translation: "Wash your hands before eating." },
+    ],
+    quiz: {
+      sentence: "출발하[blank] 전화 주세요",
+      blank: "[blank]",
+      hint: "어떤 동작의 이전",
+      correctAnswer: "기 전에",
+      options: ["기 전에", "고 나서", "는 동안", "면서"],
+    },
+  },
+  {
+    id: "g033",
+    pattern: "-(으)ㄴ 후에",
+    name: "후행 시간 표현",
+    category: "ending",
+    level: 2,
+    explanation: {
+      ko: "어떤 동작 이후를 나타냅니다. 영어의 'after ~ing'에 해당합니다.",
+      en: "Expresses time after an action, equivalent to 'after ~ing'.",
+    },
+    examples: [
+      { sentence: "수업이 끝난 후에 만나요.", translation: "Let's meet after class ends." },
+      { sentence: "밥을 먹은 후에 산책했어요.", translation: "I took a walk after eating." },
+    ],
+    quiz: {
+      sentence: "샤워를 하[blank] 후에 잤어요",
+      blank: "[blank]",
+      hint: "어떤 동작의 이후",
+      correctAnswer: "ㄴ",
+      options: ["ㄴ", "는", "기", "면"],
+    },
+  },
+
+  // ==========================================
+  // 표현 추가 (Expressions, Level 2-3) - 12개
+  // ==========================================
+  {
+    id: "g034",
+    pattern: "-아/어 보다",
+    name: "시도/경험 표현",
+    category: "expression",
+    level: 2,
+    explanation: {
+      ko: "어떤 동작을 시도하거나 경험함을 나타냅니다. 영어의 'try ~ing'에 해당합니다.",
+      en: "Expresses trying or experiencing an action, equivalent to 'try ~ing'.",
+    },
+    examples: [
+      { sentence: "한국 음식을 먹어 봤어요.", translation: "I've tried Korean food." },
+      { sentence: "이거 한번 입어 보세요.", translation: "Try this on once." },
+    ],
+    quiz: {
+      sentence: "이 노래를 한번 들[blank]",
+      blank: "[blank]",
+      hint: "시도를 나타내는 표현",
+      correctAnswer: "어 보세요",
+      options: ["어 보세요", "었어요", "을 거예요", "고 싶어요"],
+    },
+  },
+  {
+    id: "g035",
+    pattern: "-아/어 주다",
+    name: "수혜 표현",
+    category: "expression",
+    level: 2,
+    explanation: {
+      ko: "다른 사람을 위해 어떤 동작을 한다는 의미를 나타냅니다.",
+      en: "Expresses doing an action for someone's benefit, equivalent to 'do ~ for someone'.",
+    },
+    examples: [
+      { sentence: "사진 좀 찍어 주세요.", translation: "Please take a picture for me." },
+      { sentence: "친구가 도와줬어요.", translation: "My friend helped me." },
+    ],
+    quiz: {
+      sentence: "이거 좀 가르쳐 [blank]",
+      blank: "[blank]",
+      hint: "부탁하는 표현",
+      correctAnswer: "주세요",
+      options: ["주세요", "보세요", "있어요", "갔어요"],
+    },
+  },
+  {
+    id: "g036",
+    pattern: "-(으)ㄴ 적이 있다/없다",
+    name: "경험 유무 표현",
+    category: "expression",
+    level: 2,
+    explanation: {
+      ko: "과거의 경험이 있는지 없는지를 나타냅니다. 영어의 'have/haven't ~ed'에 해당합니다.",
+      en: "Expresses whether one has or hasn't experienced something, equivalent to 'have/haven't ~ed'.",
+    },
+    examples: [
+      { sentence: "한국에 가 본 적이 있어요.", translation: "I've been to Korea." },
+      { sentence: "그런 음식은 먹어 본 적이 없어요.", translation: "I've never eaten such food." },
+    ],
+    quiz: {
+      sentence: "이 영화를 본 [blank] 있어요",
+      blank: "[blank]",
+      hint: "과거 경험을 나타내는 표현",
+      correctAnswer: "적이",
+      options: ["적이", "수가", "것이", "줄"],
+    },
+  },
+  {
+    id: "g037",
+    pattern: "-(으)ㄹ 줄 알다/모르다",
+    name: "능력 표현",
+    category: "expression",
+    level: 2,
+    explanation: {
+      ko: "기술이나 방법을 알고 있는지 나타냅니다. '-(으)ㄹ 수 있다'와 비슷하지만 학습된 능력을 강조합니다.",
+      en: "Expresses knowing how to do something, emphasizing learned skill rather than possibility.",
+    },
+    examples: [
+      { sentence: "수영할 줄 알아요.", translation: "I know how to swim." },
+      { sentence: "운전할 줄 몰라요.", translation: "I don't know how to drive." },
+    ],
+    quiz: {
+      sentence: "한국어로 말[blank] 알아요",
+      blank: "[blank]",
+      hint: "할 수 있는 능력",
+      correctAnswer: "할 줄",
+      options: ["할 줄", "할 수", "하기", "할 적"],
+    },
+  },
+  {
+    id: "g038",
+    pattern: "-(으)ㄹ 때",
+    name: "시간 표현",
+    category: "expression",
+    level: 2,
+    explanation: {
+      ko: "어떤 일이 일어나는 때를 나타냅니다. 영어의 'when'에 해당합니다.",
+      en: "Expresses the time when an action occurs, equivalent to 'when'.",
+    },
+    examples: [
+      { sentence: "밥을 먹을 때 텔레비전을 봐요.", translation: "When I eat, I watch TV." },
+      { sentence: "어렸을 때 시골에서 살았어요.", translation: "When I was young, I lived in the countryside." },
+    ],
+    quiz: {
+      sentence: "한국에 갔[blank] 김치를 먹었어요",
+      blank: "[blank]",
+      hint: "시간을 나타내는 표현",
+      correctAnswer: "을 때",
+      options: ["을 때", "으면", "어서", "고"],
+    },
+  },
+  {
+    id: "g039",
+    pattern: "-(으)면 안 되다",
+    name: "금지 표현",
+    category: "expression",
+    level: 2,
+    explanation: {
+      ko: "어떤 행동이 허용되지 않음을 나타냅니다. 영어의 'must not'에 해당합니다.",
+      en: "Expresses prohibition, equivalent to 'must not' or 'should not'.",
+    },
+    examples: [
+      { sentence: "여기서 담배를 피우면 안 돼요.", translation: "You must not smoke here." },
+      { sentence: "수업 시간에 늦으면 안 돼요.", translation: "You must not be late to class." },
+    ],
+    quiz: {
+      sentence: "도서관에서 떠들[blank] 안 돼요",
+      blank: "[blank]",
+      hint: "금지를 나타내는 표현",
+      correctAnswer: "면",
+      options: ["면", "고", "어서", "지만"],
+    },
+  },
+  {
+    id: "g040",
+    pattern: "-아/어도 되다",
+    name: "허락 표현",
+    category: "expression",
+    level: 2,
+    explanation: {
+      ko: "어떤 행동이 허락됨을 나타냅니다. 영어의 'may/can'에 해당합니다.",
+      en: "Expresses permission, equivalent to 'may' or 'can'.",
+    },
+    examples: [
+      { sentence: "여기 앉아도 돼요?", translation: "May I sit here?" },
+      { sentence: "지금 가도 돼요.", translation: "You may go now." },
+    ],
+    quiz: {
+      sentence: "사진을 찍[blank] 돼요",
+      blank: "[blank]",
+      hint: "허락을 구하는 표현",
+      correctAnswer: "어도",
+      options: ["어도", "으면", "어서", "고"],
+    },
+  },
+  {
+    id: "g041",
+    pattern: "-(으)ㄹ까요?",
+    name: "제안/추측 표현",
+    category: "expression",
+    level: 2,
+    explanation: {
+      ko: "제안하거나 추측을 나타냅니다. 'Shall we ~?' 또는 'I wonder ~'와 비슷합니다.",
+      en: "Expresses suggestion or speculation, equivalent to 'Shall we ~?' or 'I wonder ~'.",
+    },
+    examples: [
+      { sentence: "같이 갈까요?", translation: "Shall we go together?" },
+      { sentence: "비가 올까요?", translation: "I wonder if it will rain." },
+    ],
+    quiz: {
+      sentence: "오늘 뭐 먹[blank]",
+      blank: "[blank]",
+      hint: "제안하는 표현",
+      correctAnswer: "을까요",
+      options: ["을까요", "었어요", "고 싶어요", "어요"],
+    },
+  },
+  {
+    id: "g042",
+    pattern: "-지요?",
+    name: "확인 표현",
+    category: "expression",
+    level: 2,
+    explanation: {
+      ko: "이미 알고 있는 사실을 확인할 때 사용합니다. 영어의 부가 의문문(tag question)과 비슷합니다.",
+      en: "Used to confirm something already known, similar to English tag questions.",
+    },
+    examples: [
+      { sentence: "오늘 날씨가 좋지요?", translation: "The weather is nice today, isn't it?" },
+      { sentence: "한국 사람이지요?", translation: "You're Korean, right?" },
+    ],
+    quiz: {
+      sentence: "이거 맛있[blank]",
+      blank: "[blank]",
+      hint: "확인하는 표현",
+      correctAnswer: "지요",
+      options: ["지요", "어요", "을까요", "네요"],
+    },
+  },
+  {
+    id: "g043",
+    pattern: "-(으)면서",
+    name: "동시 동작 표현",
+    category: "expression",
+    level: 2,
+    explanation: {
+      ko: "두 동작이 동시에 일어남을 나타냅니다. 영어의 'while ~ing'에 해당합니다.",
+      en: "Expresses two actions occurring at the same time, equivalent to 'while ~ing'.",
+    },
+    examples: [
+      { sentence: "음악을 들으면서 공부해요.", translation: "I study while listening to music." },
+      { sentence: "걸으면서 전화해요.", translation: "I talk on the phone while walking." },
+    ],
+    quiz: {
+      sentence: "텔레비전을 보[blank] 밥을 먹어요",
+      blank: "[blank]",
+      hint: "동시 동작을 나타내는 표현",
+      correctAnswer: "면서",
+      options: ["면서", "고 나서", "기 전에", "어서"],
+    },
+  },
+  {
+    id: "g044",
+    pattern: "-네요",
+    name: "감탄 표현",
+    category: "expression",
+    level: 2,
+    explanation: {
+      ko: "새롭게 알게 된 사실에 대한 감탄이나 반응을 나타냅니다.",
+      en: "Expresses surprise or reaction to newly discovered information.",
+    },
+    examples: [
+      { sentence: "정말 예쁘네요!", translation: "It's really pretty!" },
+      { sentence: "한국말을 잘하시네요.", translation: "You speak Korean well!" },
+    ],
+    quiz: {
+      sentence: "음식이 정말 맛있[blank]",
+      blank: "[blank]",
+      hint: "감탄을 나타내는 표현",
+      correctAnswer: "네요",
+      options: ["네요", "지요", "을까요", "어요"],
+    },
+  },
+  {
+    id: "g045",
+    pattern: "-(으)려고 하다",
+    name: "의도 표현",
+    category: "expression",
+    level: 2,
+    explanation: {
+      ko: "어떤 행동을 할 의도를 나타냅니다. 영어의 'intend to', 'be going to'에 해당합니다.",
+      en: "Expresses intention to do something, equivalent to 'intend to' or 'be going to'.",
+    },
+    examples: [
+      { sentence: "내년에 한국에 가려고 해요.", translation: "I intend to go to Korea next year." },
+      { sentence: "운동을 시작하려고 해요.", translation: "I'm planning to start exercising." },
+    ],
+    quiz: {
+      sentence: "주말에 영화를 보[blank] 해요",
+      blank: "[blank]",
+      hint: "의도를 나타내는 표현",
+      correctAnswer: "려고",
+      options: ["려고", "어서", "면서", "지만"],
+    },
+  },
 ];
 
 // 카테고리 목록
 export const grammarCategories = [
-  { id: "particle", name: "조사", nameEn: "Particles", icon: "🔗", count: 10 },
-  { id: "ending", name: "어미", nameEn: "Endings", icon: "📝", count: 6 },
-  { id: "expression", name: "표현", nameEn: "Expressions", icon: "💬", count: 4 },
+  { id: "particle", name: "조사", nameEn: "Particles", icon: "🔗", count: 15 },
+  { id: "ending", name: "어미", nameEn: "Endings", icon: "📝", count: 14 },
+  { id: "expression", name: "표현", nameEn: "Expressions", icon: "💬", count: 16 },
 ];
 
 // 카테고리별 문법 가져오기

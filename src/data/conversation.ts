@@ -1,5 +1,5 @@
 // 회화 시나리오 데이터
-import { Coffee, ShoppingCart, Building2, Users, Plane, Utensils, Car, Hotel, Hospital, Scissors, Phone, CreditCard, Train, MapPin, Gift } from "lucide-react";
+import { Coffee, ShoppingCart, Building2, Users, Plane, Utensils, Car, Hotel, Hospital, Scissors, Phone, CreditCard, Train, MapPin, Gift, Mail, Bus, Dumbbell, Landmark, ShoppingBag, Briefcase, UserPlus, Pill } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export interface ConversationSentence {
@@ -1022,14 +1022,623 @@ export const conversationScenarios: ConversationScenario[] = [
     ],
     culturalNotes: "한국에서는 생일에 미역국을 먹는 전통이 있습니다.",
   },
+
+  // ==========================================
+  // 추가 시나리오 - 일상생활 (Daily Life) +3
+  // ==========================================
+  {
+    id: "post-office",
+    icon: Mail,
+    title: "우체국에서 소포 보내기",
+    description: "소포 발송, 우표 구매, 등기/일반 우편",
+    category: "daily",
+    level: 2,
+    gradient: "from-red-500 to-pink-500",
+    sentences: [
+      {
+        english: "I'd like to send this package.",
+        korean: "이 소포를 보내고 싶어요",
+        words: ["소포를", "이", "보내고", "싶어요"],
+      },
+      {
+        english: "Where would you like to send it?",
+        korean: "어디로 보내실 거예요",
+        words: ["어디로", "보내실", "거예요"],
+      },
+      {
+        english: "To Japan, please.",
+        korean: "일본으로 보내 주세요",
+        words: ["일본으로", "보내", "주세요"],
+      },
+      {
+        english: "How long will it take?",
+        korean: "얼마나 걸려요",
+        words: ["얼마나", "걸려요"],
+      },
+      {
+        english: "It takes about 5 days.",
+        korean: "5일 정도 걸려요",
+        words: ["5일", "정도", "걸려요"],
+      },
+      {
+        english: "How much is the shipping?",
+        korean: "배송비가 얼마예요",
+        words: ["배송비가", "얼마예요"],
+      },
+      {
+        english: "It's 25,000 won by EMS.",
+        korean: "EMS로 이만오천 원이에요",
+        words: ["EMS로", "이만오천", "원이에요"],
+      },
+      {
+        english: "Please send it by registered mail.",
+        korean: "등기로 보내 주세요",
+        words: ["등기로", "보내", "주세요"],
+      },
+      {
+        english: "Please write the address here.",
+        korean: "여기에 주소를 써 주세요",
+        words: ["여기에", "주소를", "써", "주세요"],
+      },
+      {
+        english: "Thank you, here's your receipt.",
+        korean: "감사합니다 영수증이에요",
+        words: ["감사합니다", "영수증이에요"],
+      },
+    ],
+    keyExpressions: [
+      { korean: "~로 보내 주세요", english: "Please send to ~", usage: "발송지 명시" },
+      { korean: "얼마나 걸려요?", english: "How long does it take?", usage: "소요 시간 묻기" },
+    ],
+    culturalNotes: "한국 우체국(우정사업본부)은 EMS, 등기, 일반 우편 등 다양한 옵션을 제공합니다.",
+  },
+  {
+    id: "bus",
+    icon: Bus,
+    title: "버스 타기",
+    description: "노선 묻기, 환승, 하차 알림",
+    category: "daily",
+    level: 2,
+    gradient: "from-blue-500 to-indigo-500",
+    sentences: [
+      {
+        english: "Excuse me, does this bus go to Hongdae?",
+        korean: "저기요 이 버스 홍대 가요",
+        words: ["저기요", "이", "버스", "홍대", "가요"],
+      },
+      {
+        english: "Yes, it does.",
+        korean: "네 가요",
+        words: ["네", "가요"],
+      },
+      {
+        english: "How many stops is it?",
+        korean: "몇 정거장 가야 해요",
+        words: ["몇", "정거장", "가야", "해요"],
+      },
+      {
+        english: "About 7 stops.",
+        korean: "일곱 정거장 정도예요",
+        words: ["일곱", "정거장", "정도예요"],
+      },
+      {
+        english: "Where do I transfer?",
+        korean: "어디서 갈아타요",
+        words: ["어디서", "갈아타요"],
+      },
+      {
+        english: "Transfer at Sinchon Station.",
+        korean: "신촌역에서 갈아타세요",
+        words: ["신촌역에서", "갈아타세요"],
+      },
+      {
+        english: "Could you tell me when to get off?",
+        korean: "내릴 때 말씀해 주세요",
+        words: ["내릴", "때", "말씀해", "주세요"],
+      },
+      {
+        english: "Sure, I will.",
+        korean: "네 알려 드릴게요",
+        words: ["네", "알려", "드릴게요"],
+      },
+      {
+        english: "We're here, get off now.",
+        korean: "다 왔어요 여기서 내리세요",
+        words: ["다", "왔어요", "여기서", "내리세요"],
+      },
+      {
+        english: "Thank you so much!",
+        korean: "정말 감사합니다",
+        words: ["정말", "감사합니다"],
+      },
+    ],
+    keyExpressions: [
+      { korean: "~ 가요?", english: "Does it go to ~?", usage: "목적지 확인" },
+      { korean: "~에서 갈아타세요", english: "Transfer at ~", usage: "환승 안내" },
+    ],
+    culturalNotes: "교통카드(T-money 등)로 환승하면 무료 또는 할인이 적용됩니다.",
+  },
+  {
+    id: "gym",
+    icon: Dumbbell,
+    title: "헬스장 등록하기",
+    description: "회원권 가입, PT 문의, 운동 예약",
+    category: "daily",
+    level: 2,
+    gradient: "from-orange-500 to-red-500",
+    sentences: [
+      {
+        english: "I'd like to sign up for a membership.",
+        korean: "회원권을 등록하고 싶어요",
+        words: ["회원권을", "등록하고", "싶어요"],
+      },
+      {
+        english: "How long would you like?",
+        korean: "얼마나 하실 거예요",
+        words: ["얼마나", "하실", "거예요"],
+      },
+      {
+        english: "Three months, please.",
+        korean: "3개월로 할게요",
+        words: ["3개월로", "할게요"],
+      },
+      {
+        english: "It's 150,000 won for three months.",
+        korean: "3개월에 십오만 원이에요",
+        words: ["3개월에", "십오만", "원이에요"],
+      },
+      {
+        english: "Do you offer personal training?",
+        korean: "PT도 받을 수 있어요",
+        words: ["PT도", "받을", "수", "있어요"],
+      },
+      {
+        english: "Yes, you can book a session at the front desk.",
+        korean: "네 프론트에서 예약하세요",
+        words: ["네", "프론트에서", "예약하세요"],
+      },
+      {
+        english: "What time is the gym open?",
+        korean: "몇 시까지 운영해요",
+        words: ["몇", "시까지", "운영해요"],
+      },
+      {
+        english: "We're open from 6 AM to 11 PM.",
+        korean: "오전 6시부터 밤 11시까지 해요",
+        words: ["오전", "6시부터", "밤", "11시까지", "해요"],
+      },
+      {
+        english: "Where are the locker rooms?",
+        korean: "탈의실은 어디예요",
+        words: ["탈의실은", "어디예요"],
+      },
+      {
+        english: "Down the hall on the right.",
+        korean: "복도 끝 오른쪽에 있어요",
+        words: ["복도", "끝", "오른쪽에", "있어요"],
+      },
+    ],
+    keyExpressions: [
+      { korean: "~ 등록하고 싶어요", english: "I'd like to sign up for ~", usage: "가입 요청" },
+      { korean: "몇 시까지 ~해요?", english: "Until what time ~?", usage: "운영 시간 확인" },
+    ],
+  },
+
+  // ==========================================
+  // 추가 시나리오 - 여행 (Travel) +2
+  // ==========================================
+  {
+    id: "museum",
+    icon: Landmark,
+    title: "박물관 관람하기",
+    description: "입장권, 가이드 투어, 사진 촬영 규정",
+    category: "travel",
+    level: 2,
+    gradient: "from-stone-500 to-amber-700",
+    sentences: [
+      {
+        english: "How much is the admission?",
+        korean: "입장료가 얼마예요",
+        words: ["입장료가", "얼마예요"],
+      },
+      {
+        english: "It's 5,000 won for adults.",
+        korean: "어른은 오천 원이에요",
+        words: ["어른은", "오천", "원이에요"],
+      },
+      {
+        english: "Two adults, please.",
+        korean: "어른 두 명이요",
+        words: ["어른", "두", "명이요"],
+      },
+      {
+        english: "Is there a guide tour available?",
+        korean: "가이드 투어가 있어요",
+        words: ["가이드", "투어가", "있어요"],
+      },
+      {
+        english: "Yes, it starts at 2 PM.",
+        korean: "네 오후 2시에 시작해요",
+        words: ["네", "오후", "2시에", "시작해요"],
+      },
+      {
+        english: "Can I take photos inside?",
+        korean: "안에서 사진 찍어도 돼요",
+        words: ["안에서", "사진", "찍어도", "돼요"],
+      },
+      {
+        english: "Photos are okay, but no flash.",
+        korean: "사진은 괜찮은데 플래시는 안 돼요",
+        words: ["사진은", "괜찮은데", "플래시는", "안", "돼요"],
+      },
+      {
+        english: "Where is the gift shop?",
+        korean: "기념품 가게는 어디예요",
+        words: ["기념품", "가게는", "어디예요"],
+      },
+      {
+        english: "It's on the first floor by the exit.",
+        korean: "1층 출구 옆에 있어요",
+        words: ["1층", "출구", "옆에", "있어요"],
+      },
+      {
+        english: "When does the museum close?",
+        korean: "박물관은 몇 시에 닫아요",
+        words: ["박물관은", "몇", "시에", "닫아요"],
+      },
+    ],
+    keyExpressions: [
+      { korean: "~해도 돼요?", english: "Is it okay to ~?", usage: "허락 구하기" },
+      { korean: "~는 어디예요?", english: "Where is ~?", usage: "위치 묻기" },
+    ],
+    culturalNotes: "한국의 국립박물관은 대부분 무료이며, 매주 월요일은 휴관일입니다.",
+  },
+  {
+    id: "duty-free",
+    icon: ShoppingBag,
+    title: "면세점에서 쇼핑하기",
+    description: "여권 제시, 화장품/주류 구매, 인도장 안내",
+    category: "travel",
+    level: 2,
+    gradient: "from-violet-500 to-purple-500",
+    sentences: [
+      {
+        english: "Could I see your passport, please?",
+        korean: "여권 좀 보여 주시겠어요",
+        words: ["여권", "좀", "보여", "주시겠어요"],
+      },
+      {
+        english: "Here you go.",
+        korean: "여기 있어요",
+        words: ["여기", "있어요"],
+      },
+      {
+        english: "I'm looking for cosmetics.",
+        korean: "화장품을 보고 있어요",
+        words: ["화장품을", "보고", "있어요"],
+      },
+      {
+        english: "What brand do you prefer?",
+        korean: "어떤 브랜드를 좋아하세요",
+        words: ["어떤", "브랜드를", "좋아하세요"],
+      },
+      {
+        english: "Can I get a sample?",
+        korean: "샘플 받을 수 있어요",
+        words: ["샘플", "받을", "수", "있어요"],
+      },
+      {
+        english: "Of course, here you go.",
+        korean: "물론이죠 여기 있어요",
+        words: ["물론이죠", "여기", "있어요"],
+      },
+      {
+        english: "Is this duty-free price?",
+        korean: "이게 면세 가격인가요",
+        words: ["이게", "면세", "가격인가요"],
+      },
+      {
+        english: "Yes, it's 30% off the regular price.",
+        korean: "네 정가에서 30퍼센트 할인이에요",
+        words: ["네", "정가에서", "30퍼센트", "할인이에요"],
+      },
+      {
+        english: "Where do I pick up my purchase?",
+        korean: "물건은 어디서 받아요",
+        words: ["물건은", "어디서", "받아요"],
+      },
+      {
+        english: "At the duty-free counter near the gate.",
+        korean: "탑승구 근처 인도장에서 받으세요",
+        words: ["탑승구", "근처", "인도장에서", "받으세요"],
+      },
+    ],
+    keyExpressions: [
+      { korean: "~ 보여 주시겠어요?", english: "Could you show me ~?", usage: "공손한 요청" },
+      { korean: "~ 받을 수 있어요?", english: "Can I get ~?", usage: "물건/서비스 요청" },
+    ],
+    culturalNotes: "면세점에서 산 물건은 출국장 인도장(pickup counter)에서 탑승 전에 받아야 합니다.",
+  },
+
+  // ==========================================
+  // 추가 시나리오 - 비즈니스 (Business) +2
+  // ==========================================
+  {
+    id: "meeting",
+    icon: Briefcase,
+    title: "회의에서 발표하기",
+    description: "인사, 발표 시작/마무리, 질문 응답",
+    category: "business",
+    level: 3,
+    gradient: "from-slate-600 to-gray-800",
+    sentences: [
+      {
+        english: "Thank you all for coming today.",
+        korean: "오늘 와 주셔서 감사합니다",
+        words: ["오늘", "와", "주셔서", "감사합니다"],
+      },
+      {
+        english: "Let me introduce myself first.",
+        korean: "먼저 제 소개를 드리겠습니다",
+        words: ["먼저", "제", "소개를", "드리겠습니다"],
+      },
+      {
+        english: "Today I will present our Q3 results.",
+        korean: "오늘은 3분기 실적을 발표하겠습니다",
+        words: ["오늘은", "3분기", "실적을", "발표하겠습니다"],
+      },
+      {
+        english: "Please look at this slide.",
+        korean: "이 슬라이드를 봐 주세요",
+        words: ["이", "슬라이드를", "봐", "주세요"],
+      },
+      {
+        english: "Sales increased by 20% compared to last year.",
+        korean: "매출이 작년 대비 20퍼센트 증가했습니다",
+        words: ["매출이", "작년", "대비", "20퍼센트", "증가했습니다"],
+      },
+      {
+        english: "Are there any questions?",
+        korean: "질문 있으신가요",
+        words: ["질문", "있으신가요"],
+      },
+      {
+        english: "Yes, I have a question.",
+        korean: "네 질문 있습니다",
+        words: ["네", "질문", "있습니다"],
+      },
+      {
+        english: "That's a good question.",
+        korean: "좋은 질문입니다",
+        words: ["좋은", "질문입니다"],
+      },
+      {
+        english: "I'll send the materials by email later.",
+        korean: "자료는 나중에 이메일로 보내 드리겠습니다",
+        words: ["자료는", "나중에", "이메일로", "보내", "드리겠습니다"],
+      },
+      {
+        english: "Thank you for listening.",
+        korean: "들어 주셔서 감사합니다",
+        words: ["들어", "주셔서", "감사합니다"],
+      },
+    ],
+    keyExpressions: [
+      { korean: "~하겠습니다", english: "I will ~ (formal)", usage: "공식 발표 어미" },
+      { korean: "~ 있으신가요?", english: "Do you have ~?", usage: "공손한 질문" },
+    ],
+    culturalNotes: "한국 비즈니스 자리에서는 명함을 두 손으로 주고받으며 직급을 호칭에 붙여 부릅니다.",
+  },
+  {
+    id: "phone-business",
+    icon: Phone,
+    title: "비즈니스 전화 응대",
+    description: "전화 받기, 담당자 연결, 메모 남기기",
+    category: "business",
+    level: 3,
+    gradient: "from-cyan-600 to-blue-600",
+    sentences: [
+      {
+        english: "Hello, this is ABC Company.",
+        korean: "여보세요 ABC 회사입니다",
+        words: ["여보세요", "ABC", "회사입니다"],
+      },
+      {
+        english: "May I speak with Mr. Kim?",
+        korean: "김 부장님과 통화할 수 있을까요",
+        words: ["김", "부장님과", "통화할", "수", "있을까요"],
+      },
+      {
+        english: "May I ask who's calling?",
+        korean: "어디시라고 전해 드릴까요",
+        words: ["어디시라고", "전해", "드릴까요"],
+      },
+      {
+        english: "This is Park from XYZ Company.",
+        korean: "XYZ 회사의 박이라고 합니다",
+        words: ["XYZ", "회사의", "박이라고", "합니다"],
+      },
+      {
+        english: "One moment, please. I'll transfer you.",
+        korean: "잠시만 기다려 주세요 연결해 드릴게요",
+        words: ["잠시만", "기다려", "주세요", "연결해", "드릴게요"],
+      },
+      {
+        english: "He's in a meeting right now.",
+        korean: "지금 회의 중이세요",
+        words: ["지금", "회의", "중이세요"],
+      },
+      {
+        english: "Would you like to leave a message?",
+        korean: "메모 남겨 드릴까요",
+        words: ["메모", "남겨", "드릴까요"],
+      },
+      {
+        english: "Please tell him to call me back.",
+        korean: "전화 부탁한다고 전해 주세요",
+        words: ["전화", "부탁한다고", "전해", "주세요"],
+      },
+      {
+        english: "Could I have your phone number?",
+        korean: "전화번호를 알려 주시겠어요",
+        words: ["전화번호를", "알려", "주시겠어요"],
+      },
+      {
+        english: "Thank you. Goodbye.",
+        korean: "감사합니다 안녕히 계세요",
+        words: ["감사합니다", "안녕히", "계세요"],
+      },
+    ],
+    keyExpressions: [
+      { korean: "~과 통화할 수 있을까요?", english: "May I speak with ~?", usage: "통화 요청" },
+      { korean: "메모 남겨 드릴까요?", english: "Shall I take a message?", usage: "부재 응대" },
+    ],
+    culturalNotes: "회사 전화 응대 시 자기 회사명을 먼저 밝히는 것이 한국식 비즈니스 매너입니다.",
+  },
+
+  // ==========================================
+  // 추가 시나리오 - 소셜 (Social) +2
+  // ==========================================
+  {
+    id: "introduce",
+    icon: UserPlus,
+    title: "자기소개 하기",
+    description: "이름, 직업, 취미, 출신 소개",
+    category: "social",
+    level: 1,
+    gradient: "from-teal-500 to-emerald-500",
+    sentences: [
+      {
+        english: "Hello, nice to meet you.",
+        korean: "안녕하세요 만나서 반가워요",
+        words: ["안녕하세요", "만나서", "반가워요"],
+      },
+      {
+        english: "My name is Minjun Kim.",
+        korean: "제 이름은 김민준이에요",
+        words: ["제", "이름은", "김민준이에요"],
+      },
+      {
+        english: "Where are you from?",
+        korean: "어디에서 오셨어요",
+        words: ["어디에서", "오셨어요"],
+      },
+      {
+        english: "I'm from America.",
+        korean: "미국에서 왔어요",
+        words: ["미국에서", "왔어요"],
+      },
+      {
+        english: "What do you do?",
+        korean: "무슨 일 하세요",
+        words: ["무슨", "일", "하세요"],
+      },
+      {
+        english: "I'm a software engineer.",
+        korean: "소프트웨어 엔지니어예요",
+        words: ["소프트웨어", "엔지니어예요"],
+      },
+      {
+        english: "What are your hobbies?",
+        korean: "취미가 뭐예요",
+        words: ["취미가", "뭐예요"],
+      },
+      {
+        english: "I like watching movies and reading.",
+        korean: "영화 보기랑 독서를 좋아해요",
+        words: ["영화", "보기랑", "독서를", "좋아해요"],
+      },
+      {
+        english: "How long have you been in Korea?",
+        korean: "한국에 온 지 얼마나 됐어요",
+        words: ["한국에", "온", "지", "얼마나", "됐어요"],
+      },
+      {
+        english: "I've been here for 6 months.",
+        korean: "6개월 됐어요",
+        words: ["6개월", "됐어요"],
+      },
+    ],
+    keyExpressions: [
+      { korean: "~에서 왔어요", english: "I came from ~", usage: "출신 표현" },
+      { korean: "~하는 거 좋아해요", english: "I like ~ing", usage: "취미 표현" },
+    ],
+    culturalNotes: "한국에서는 첫 만남에 나이와 직업을 묻는 경우가 많습니다.",
+  },
+  {
+    id: "pharmacy",
+    icon: Pill,
+    title: "약국에서 약 사기",
+    description: "증상 설명, 약 종류, 복용법 묻기",
+    category: "social",
+    level: 2,
+    gradient: "from-green-500 to-lime-500",
+    sentences: [
+      {
+        english: "How can I help you?",
+        korean: "어떻게 오셨어요",
+        words: ["어떻게", "오셨어요"],
+      },
+      {
+        english: "I have a headache.",
+        korean: "머리가 아파요",
+        words: ["머리가", "아파요"],
+      },
+      {
+        english: "Do you have any other symptoms?",
+        korean: "다른 증상도 있어요",
+        words: ["다른", "증상도", "있어요"],
+      },
+      {
+        english: "I have a fever too.",
+        korean: "열도 나요",
+        words: ["열도", "나요"],
+      },
+      {
+        english: "Since when?",
+        korean: "언제부터 그러셨어요",
+        words: ["언제부터", "그러셨어요"],
+      },
+      {
+        english: "Since this morning.",
+        korean: "오늘 아침부터요",
+        words: ["오늘", "아침부터요"],
+      },
+      {
+        english: "Take this medicine three times a day.",
+        korean: "이 약을 하루에 세 번 드세요",
+        words: ["이", "약을", "하루에", "세", "번", "드세요"],
+      },
+      {
+        english: "Should I take it after meals?",
+        korean: "식사 후에 먹어요",
+        words: ["식사", "후에", "먹어요"],
+      },
+      {
+        english: "Yes, take it 30 minutes after eating.",
+        korean: "네 식후 30분에 드세요",
+        words: ["네", "식후", "30분에", "드세요"],
+      },
+      {
+        english: "How much is it?",
+        korean: "얼마예요",
+        words: ["얼마예요"],
+      },
+    ],
+    keyExpressions: [
+      { korean: "~가 아파요", english: "My ~ hurts", usage: "증상 설명" },
+      { korean: "하루에 ~번 드세요", english: "Take ~ times a day", usage: "복용 안내" },
+    ],
+    culturalNotes: "한국에서는 처방전 없이 살 수 있는 일반의약품도 약사 상담 후 구매합니다.",
+  },
 ];
 
 // 카테고리 목록
 export const conversationCategories = [
-  { id: "daily", name: "일상생활", nameEn: "Daily Life", icon: "🏠", count: 6 },
-  { id: "travel", name: "여행", nameEn: "Travel", icon: "✈️", count: 5 },
-  { id: "business", name: "비즈니스", nameEn: "Business", icon: "💼", count: 2 },
-  { id: "social", name: "소셜", nameEn: "Social", icon: "👥", count: 2 },
+  { id: "daily", name: "일상생활", nameEn: "Daily Life", icon: "🏠", count: 9 },
+  { id: "travel", name: "여행", nameEn: "Travel", icon: "✈️", count: 7 },
+  { id: "business", name: "비즈니스", nameEn: "Business", icon: "💼", count: 4 },
+  { id: "social", name: "소셜", nameEn: "Social", icon: "👥", count: 4 },
 ];
 
 // 카테고리별 시나리오 가져오기

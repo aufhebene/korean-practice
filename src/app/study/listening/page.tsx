@@ -12,7 +12,8 @@ import {
   type ListeningQuiz
 } from "@/data/listening";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { submitStudySession, type StudySessionItem } from "@/lib/api";
+import { submitStudySession, type StudySessionItem } from "@/lib/firestore";
+import { speakKorean } from "@/lib/tts";
 
 const QUIZ_COUNT = 10;
 
@@ -29,7 +30,7 @@ export default function ListeningStudyPage() {
   const [isStarted, setIsStarted] = useState(false);
   const [playCount, setPlayCount] = useState(0);
   const [results, setResults] = useState<StudySessionItem[]>([]);
-  const token = useAuthStore((s) => s.token);
+  const uid = useAuthStore((s) => s.user?.uid);
 
   // 퀴즈 시작
   const startQuiz = (level?: number) => {
@@ -50,22 +51,16 @@ export default function ListeningStudyPage() {
       selectedWords.every((word, idx) => word === currentQuiz.correctOrder[idx])
     : false;
 
-  // 음성 재생 (Web Speech API 사용)
-  const playAudio = (rate: number = 0.8) => {
+  // 음성 재생 (네이티브 Capacitor TTS, 웹은 Web Speech API fallback)
+  const playAudio = async (rate: number = 0.8) => {
     if (!currentQuiz) return;
-
-    if ("speechSynthesis" in window) {
-      // 이전 음성 중단
-      speechSynthesis.cancel();
-
-      const utterance = new SpeechSynthesisUtterance(currentQuiz.transcript);
-      utterance.lang = "ko-KR";
-      utterance.rate = rate;
-      speechSynthesis.speak(utterance);
+    try {
+      await speakKorean(currentQuiz.transcript, { rate });
       setHasListened(true);
       setPlayCount((prev) => prev + 1);
-    } else {
-      alert("이 브라우저는 음성 합성을 지원하지 않습니다.");
+    } catch (err) {
+      console.warn("[TTS]", err);
+      alert("음성 합성을 사용할 수 없습니다.");
       setHasListened(true);
     }
   };
@@ -96,7 +91,7 @@ export default function ListeningStudyPage() {
       setCorrectCount((prev) => prev + 1);
     }
     if (currentQuiz) {
-      setResults((prev) => [...prev, { item_id: currentQuiz.id, correct: isCorrect }]);
+      setResults((prev) => [...prev, { itemId: currentQuiz.id, correct: isCorrect }]);
     }
   };
 
@@ -112,9 +107,9 @@ export default function ListeningStudyPage() {
       setPlayCount(0);
     } else {
       setIsComplete(true);
-      if (token) {
-        submitStudySession(token, {
-          quiz_type: "listening",
+      if (uid) {
+        submitStudySession(uid, {
+          quizType: "listening",
           score: results.filter((r) => r.correct).length,
           total: quizItems.length,
           items: results,
