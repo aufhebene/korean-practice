@@ -6,7 +6,6 @@ import { ArrowLeft, Settings, BarChart3, Trophy, HelpCircle, LogOut, User, Flame
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
-import ReminderSettings from "@/components/ui/ReminderSettings";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { getRecentStudySessions, getStats, type StudySessionDoc, type UserStats } from "@/lib/firestore";
 
@@ -170,16 +169,6 @@ export default function ProfilePage() {
             </div>
           </motion.div>
         )}
-
-        {/* Reminder Settings */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.18 }}
-          className="mb-6"
-        >
-          <ReminderSettings />
-        </motion.div>
 
         {/* Menu List */}
         <motion.div

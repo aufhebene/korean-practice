@@ -50,8 +50,11 @@ export function bumpStreak(
  * - "v..." → vocabulary
  * - "g..." → grammar
  */
-export function categorizeItemId(itemId: string): "vocabulary" | "grammar" | "other" {
+export function categorizeItemId(
+  itemId: string,
+): "vocabulary" | "grammar" | "listening" | "other" {
   if (itemId.startsWith("v")) return "vocabulary";
   if (itemId.startsWith("g")) return "grammar";
+  if (itemId.startsWith("l")) return "listening";
   return "other";
 }

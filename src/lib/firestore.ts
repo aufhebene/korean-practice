@@ -172,6 +172,93 @@ export async function setReminderSettings(
   await updateDoc(userRef(uid), { reminder: settings });
 }
 
+// --- Per-module counts for dashboard ---
+
+export interface QuizModuleCounts {
+  /** 학습 데이터에 있지만 사용자가 한 번도 풀지 않은 항목 수 */
+  new: number;
+  /** SRS상 오늘 복습 대상 (nextReview <= now AND !mastered) */
+  review: number;
+  /** 학습 중인데 정답률이 낮아 재도전이 필요한 항목 (attempts>=2 && correct/attempts<0.5 && !mastered) */
+  retry: number;
+}
+
+export interface ModuleCounts {
+  vocabulary: QuizModuleCounts;
+  grammar: QuizModuleCounts;
+  listening: QuizModuleCounts;
+}
+
+/**
+ * 사용자의 vocabularyProgress 컬렉션 전체를 한 번에 읽어서 모듈별 카운트 계산.
+ * 콘텐츠 총 개수는 호출자가 정적 데이터에서 전달.
+ */
+export async function getModuleCounts(
+  uid: string,
+  totals: { vocabulary: number; grammar: number; listening: number },
+): Promise<ModuleCounts> {
+  const snap = await getDocs(
+    collection(getDb(), "users", uid, "vocabularyProgress"),
+  );
+  const now = new Date();
+
+  const buckets: ModuleCounts = {
+    vocabulary: { new: 0, review: 0, retry: 0 },
+    grammar: { new: 0, review: 0, retry: 0 },
+    listening: { new: 0, review: 0, retry: 0 },
+  };
+
+  // 진도가 있는 itemId 집계
+  const studiedByCategory: Record<keyof ModuleCounts, number> = {
+    vocabulary: 0,
+    grammar: 0,
+    listening: 0,
+  };
+
+  for (const doc of snap.docs) {
+    const id = doc.id;
+    const cat = categorizeItemId(id);
+    if (cat === "other") continue;
+    const data = doc.data() as VocabularyProgressData;
+    studiedByCategory[cat] += 1;
+
+    if (!data.mastered) {
+      const reviewDue = data.nextReview.toDate() <= now;
+      if (reviewDue) buckets[cat].review += 1;
+
+      const accuracy = data.attempts === 0 ? 1 : data.correct / data.attempts;
+      if (data.attempts >= 2 && accuracy < 0.5) buckets[cat].retry += 1;
+    }
+  }
+
+  buckets.vocabulary.new = Math.max(0, totals.vocabulary - studiedByCategory.vocabulary);
+  buckets.grammar.new = Math.max(0, totals.grammar - studiedByCategory.grammar);
+  buckets.listening.new = Math.max(0, totals.listening - studiedByCategory.listening);
+
+  return buckets;
+}
+
+/**
+ * 오늘(또는 그 이전) 복습 대상인 어휘 itemId 목록.
+ * /study/review 페이지에서 사용.
+ */
+export async function getReviewDueVocabularyIds(uid: string): Promise<string[]> {
+  const snap = await getDocs(
+    collection(getDb(), "users", uid, "vocabularyProgress"),
+  );
+  const now = new Date();
+  const ids: string[] = [];
+  for (const doc of snap.docs) {
+    const id = doc.id;
+    if (categorizeItemId(id) !== "vocabulary") continue;
+    const data = doc.data() as VocabularyProgressData;
+    if (!data.mastered && data.nextReview.toDate() <= now) {
+      ids.push(id);
+    }
+  }
+  return ids;
+}
+
 // --- Stats ---
 
 export async function getStats(uid: string): Promise<UserStats> {
